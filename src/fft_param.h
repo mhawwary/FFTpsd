@@ -25,6 +25,17 @@ struct PSD_Param{
     type_=string_to_enum<PSD_Type>(input("psd/type","density",false));
     return;
   }
+
+  void Parse(GetPot& cmdline){
+    if(cmdline.search("-bin"))
+      bin_aver_flag=1;
+    octave_n=cmdline.follow(1.,"-oct");
+    if(cmdline.search("-psd"))
+      type_=DENSITY;
+    if(cmdline.search("-pow"))
+      type_=POWER;
+    p_ref=cmdline.follow(2.e-5,"-pref");
+  }
 };
 
 struct FFT_Param{
@@ -71,6 +82,74 @@ struct FFT_Param{
     return;
   }
 
+  void Parse_psd_defaults(const std::string &in_fname){
+    // defaults if the psd flag is turned on
+    // hann window with 50% shift and variance preserving
+    GetPot input(in_fname.c_str());
+    Nt_sub=input("fft/N",0,false);
+    Lt_sub=input("fft/window_length",0.,false);
+    double dt_temp=0.;
+    if(Nt_sub>0)
+        dt_temp=Lt_sub/(Nt_sub-1);  // a default value
+    dt_sub=input("fft/dt",dt_temp,false);
+    if(Lt_sub<=1.e-5)
+      Lt_sub=dt_sub*Nt_sub;
+    shift=input("fft/shift",0.5,false); //default 0.5 shifting
+    window_type=string_to_enum<FFT_WINDOW_Type>(input("fft/window","HANN",false));
+    avgfft_mode=VARIANCE; // force to this value for psd and spl computation
+    int mean_subs_flag;
+    mean_subs_flag=input("fft/mean_substract",1,false); // default is mean substract
+    if(mean_subs_flag==1)
+      mean_substract=true;
+    else
+      mean_substract=false;
+
+    return;
+  }
+
+  void Parse(GetPot& cmdline){
+    Nt_sub=cmdline.follow(0,"-n");
+    Lt_sub=cmdline.follow(0.,"-l");
+    double dt_temp=0.;
+    if(Nt_sub>0)
+        dt_temp=Lt_sub/(Nt_sub-1);  // a default value
+    dt_sub=cmdline.follow(dt_temp,"-dt");
+    if(Lt_sub<=1.e-5)
+      Lt_sub=dt_sub*Nt_sub;
+    shift=cmdline.follow(0.,"-s"); //default no shifting or windowing
+    window_type=string_to_enum<FFT_WINDOW_Type>(cmdline.follow("RECTANGULAR","-w"));
+    avgfft_mode=PEAK; // default for fft averaging
+    if(cmdline.search("-variance"))
+      avgfft_mode=VARIANCE;
+
+    int mean_subs_flag=cmdline.follow(1,"-m"); // default is mean substract
+    if(mean_subs_flag==1)
+      mean_substract=true;
+    else
+      mean_substract=false;
+    return;
+  }
+
+  void Parse_psd_defaults(GetPot& cmdline){
+    Nt_sub=cmdline.follow(0,"-n");
+    Lt_sub=cmdline.follow(0.,"-l");
+    double dt_temp=0.;
+    if(Nt_sub>0)
+        dt_temp=Lt_sub/(Nt_sub-1);  // a default value
+    dt_sub=cmdline.follow(dt_temp,"-dt");
+    if(Lt_sub<=1.e-5)
+      Lt_sub=dt_sub*Nt_sub;
+    shift=cmdline.follow(0.5,"-s"); //default 50% overlap
+    window_type=string_to_enum<FFT_WINDOW_Type>(cmdline.follow("HANN","-w"));
+    avgfft_mode=VARIANCE; // force to this value for psd and spl computation
+
+    int mean_subs_flag=cmdline.follow(1,"-m"); // default is mean substract
+    if(mean_subs_flag==1)
+      mean_substract=true;
+    else
+      mean_substract=false;
+    return;
+  }
 };
 
 struct Wave{
@@ -118,6 +197,7 @@ struct Case_Param{
   // Function members:
   //--------------------------
   void Parse(const std::string &fname);
+  void Parse(int argc, char** argv);
 
 //  void dump_python_inputfile();
 

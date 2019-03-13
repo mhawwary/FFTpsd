@@ -14,13 +14,16 @@ void logo();
 
 int main(int argc, char** argv){
 
-  if (argc < 2)
-    FatalError_exit("ERROR: no input file is specified ............ ");
-
-  string in_fname = argv[argc-1];
-
   logo();
-  fft_driver_=new fftspc::FFT_Driver(in_fname);
+  if (argc ==1){
+    FatalError_exit("ERROR: no input is specified ............ ");
+  }else if(argc==2){ // use an input file
+    string in_fname = argv[argc-1];
+    fft_driver_=new fftspc::FFT_Driver(in_fname);
+  }else{ // use command line argument
+    fft_driver_=new fftspc::FFT_Driver(argc,argv);
+  }
+
   fft_driver_->Init();
   fft_driver_->Compute();
   fft_driver_->DumpOutputs();

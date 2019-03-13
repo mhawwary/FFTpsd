@@ -31,6 +31,11 @@ public:
 
     return;
   }
+  FFT_Driver(int argc, char** argv){
+    case_param_.Parse(argc,argv);
+
+    return;
+  }
   ~FFT_Driver(){}
 
   void Reset(){}

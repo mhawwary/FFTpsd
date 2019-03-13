@@ -25,23 +25,74 @@ void Case_Param::Parse(const std::string &in_fname){
   if(data_row>0) data_row--;
   if(data_col>1) data_col--;
 
-  psd_flag=gp_input("psd_flag",0,false);
-
   if(data_fname=="NO_INPUT_FILE"){
     _print_log("Reading the data of an analytical wave");
     wave_param.type=string_to_enum<Wave_Form_Type>(gp_input("wave/wave_form","sine",false));
     wave_param.Parse(in_fname);
   }
 
-  fft_param.Parse(in_fname);
+  psd_flag=gp_input("psd_flag",0,false);
   if(psd_flag){
+    fft_param.Parse_psd_defaults(in_fname);
     psd_param.Parse(in_fname);
     psd_param.scaling_factor=FFT<double>::GetWindowScalingFactor(fft_param.window_type,psd_param.type_);
     if(psd_flag!=0)
-      fft_param.avgfft_mode==VARIANCE; // force it to use this mode for both types of PSD
+      fft_param.avgfft_mode==VARIANCE; // force it to use this mode for both types of PSD/POWER and SPL
+  }else{
+    fft_param.Parse(in_fname);
   }
 
   return;
+}
+
+void Case_Param::Parse(int argc, char **argv){
+  // right now this works only with an input data file and not for analytical waves
+  GetPot cmdline(argc,argv);
+  data_fname=cmdline.follow("NO_INPUT_FILE",2,"-i","--file");
+  if(data_fname=="NO_INPUT_FILE")
+    FatalError_exit("There is no input data file, please try --help");
+
+  input_dir=GetFileDirectory(data_fname);
+  std::string temp=remove_extension(data_fname);
+  std::size_t last_slash=temp.find_last_of("/");
+  output_data_name=temp.substr(last_slash+1,temp.size());
+
+  output_dir=cmdline.follow(input_dir.c_str(),2,"-o","--outdir");
+  if(output_dir.find_last_of("/")==output_dir.size()-1){
+    std::string temp=remove_from_end_up_to_string("/",output_dir);
+    output_dir.clear();
+    output_dir=temp;
+  }
+
+  data_row=cmdline.follow(0,"-r");
+  data_col=cmdline.follow(1,"-c");
+
+  if(data_row>0) data_row--;
+  if(data_col>1) data_col--;
+
+  psd_flag=0;
+  if(cmdline.search("-psd")){
+    psd_flag=1;
+    psd_param.type_=DENSITY;
+  }
+  if(cmdline.search("-pow")){
+    psd_flag=1;
+    psd_param.type_=POWER;
+  }
+  if(cmdline.search("-spl"))
+    psd_flag=2;
+
+  if(psd_flag){
+    fft_param.Parse_psd_defaults(cmdline);
+    fft_param.avgfft_mode==VARIANCE; // force it to use this mode for both types of PSD/POWER and SPL
+    psd_param.Parse(cmdline);
+    psd_param.scaling_factor=FFT<double>::GetWindowScalingFactor(fft_param.window_type,psd_param.type_);
+  }else{
+    fft_param.Parse(cmdline);
+  }
+
+  return;
+
 }
 
 void Wave::GetWaveSignal(std::vector<double> &time_vec, std::vector<double> &data_vec){
