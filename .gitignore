@@ -1,0 +1,59 @@
+# .gitignore - files & folders to be ignored when commiting
+# to your local or web repository
+#
+# Note that you can still 'git add <file>' any ignored file
+# if desired
+
+
+# Temporary Files
+*~
+*.*~
+.fuse_hidden*
+*.cpp.autosave
+
+# Visualization Input/Output Files
+*.vtu
+*.plt
+*.dat
+*.txt
+*.png
+*.jbg
+*.tiff
+*.eps
+*.ps
+*.pdf
+*.fig  # Matlab figure files
+*.exe
+
+# Binary / run directory
+bin/
+build/
+
+# TeX-generated files
+*.aux
+*.synctex.gz
+*.log
+*.toc
+*.bib
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# MSVC IDE-generated files
+*.sdf
+*.opensdf
+*.suo
+*.vcxproj.user
+
+# Eclipse IDE- generated files
+.metadata/
+*.d
+*.mk
+*.cproject
+*.project
+
+# Cmake:
+.settings/
+
