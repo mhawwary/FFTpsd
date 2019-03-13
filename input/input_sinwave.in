@@ -1,0 +1,40 @@
+#input_file=./T106C_test/extract_physical_data/test_small.dat
+input_file=./output/sinewave/u_data.dat
+#output_dir=./T106C_test/extract_physical_data/ #default the same as input directory
+output_dir=./output/sinewave
+#data_row=17712   # row, default is 1
+#data_col=6       # col, default is 1
+psd_flag=2        #1:compute power spectral density, 2:sound pressure level(spl) and overall oaspl
+
+[wave]
+ wave_form = sine # sine/cosine/gaussian
+ t_start=0.
+ t_end=0.            # if t_end=0 it uses N_periods otherwise ignores N_periods     
+ N_elem=256 #512          # n_nodes = n_elem+1, should be a power of 2^{k}, k is an integer
+ N_periods=5.5 #15.5      # if N_periods=0 or t_end is also specified, it uses t_end  
+ 
+ [./trigonometric]    # u(t) = A * sin ( (2*PI*freq* t) + phy ) + C
+  freq = 2.0          # wave_frequnecy freq, default 1
+  amp  = 1.0          # wave amplitude A, defualt 1
+  const = 0.         # C  , default 0
+  phase_shift = 0.0   # phy, default 0
+   
+ [../Gaussian]  # u(t) = A * exp(-B *t^2)
+  amp    = 1.0  #A=u(0)
+  factor = 38.6 #B   
+   
+[fft]
+ N=64         # mandatory input, n data in a window subset or in the whole sample if no shifting/averaging is allowed
+ #dt=3.125e-3      #optional, dt corresponding to N 
+ window_length=0.3 #optional, the subset length or the whole sample length if no shifting/averaging
+ shift=0.5                    #0:no shifting/single fft & no averaging, 1:ensemble average, \in(0,1): shift & average
+ window=hann                  #hann/hamm/blackman/welch/bartlett/triangular/rectangular(no window)
+ magnitude_scaling_mode=variance # peak or variance preserving
+ mean_substract=0             # 1:susbtract mean or 0:no substracting
+ 
+[psd]   
+ bin_aver_flag=0  # 1: perform bin averaging
+ octave_n=1       # 1/nth octaves, defulat one octave (n=1),
+ p_ref=2.e-5      # 2e-5 Pa as default
+ type=density     # option(1):density;  --> means PSD or power spectral density(V^2/Hz) \
+                  # option(2):power; --> means power spectrum or simply power (V^2)
