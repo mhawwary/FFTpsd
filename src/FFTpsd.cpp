@@ -16,10 +16,32 @@ int main(int argc, char** argv){
 
   logo();
   if (argc ==1){
-    FatalError_exit("ERROR: no input is specified ............ ");
+    std::cout<<"help with implemented options"<<std::endl;
+    std::cout<<"--------------------------------"<<std::endl;
+    std::cout<<"       minimum arguments for fft computations"<<std::endl;
+    std::cout<<"       ---------------------------------------"<<std::endl;
+    std::cout<<"           [-i inputfile] "<<std::endl;
+    std::cout<<"           [-n N] "<<std::endl;
+
+    std::cout<<"\n       minimum arguments for psd, power & spl computations"<<std::endl;
+    std::cout<<"       ------------------------------------------------------"<<std::endl;
+    std::cout<<"           [-i inputfile]"<<std::endl;
+    std::cout<<"           [-n N] "<<std::endl;
+    std::cout<<"           [-psd] or [-pow]"<<std::endl;
+
+    std::cout<<"\n\nfor a detailed input list and discription use [--help]\n";
+
+    std::cout<<"\nAlternatively, you can just parse an input parsing file as in the examples\n\n";
+
+    _print_log("Exiting the program");
+    exit(0);
+
   }else if(argc==2){ // use an input file
     string in_fname = argv[argc-1];
-    fft_driver_=new fftspc::FFT_Driver(in_fname);
+    if(in_fname==string("-h") || in_fname==string("--help"))
+      fft_driver_=new fftspc::FFT_Driver(argc,argv);
+    else
+      fft_driver_=new fftspc::FFT_Driver(in_fname);
   }else{ // use command line argument
     fft_driver_=new fftspc::FFT_Driver(argc,argv);
   }
