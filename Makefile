@@ -69,7 +69,7 @@ help:
 	@echo 'help'
 
 all: fftpsd.exe
-prog.exe: $(OBJS)
+fftpsd.exe: $(OBJS)
 	$(CXX) $(OPTS) -o $(BIN)$@ $+
 
 $(OBJ)%.o : %.cpp 

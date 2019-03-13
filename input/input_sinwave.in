@@ -3,7 +3,7 @@ input_file=./output/sinewave/u_data.dat
 #output_dir=./T106C_test/extract_physical_data/ #default the same as input directory
 output_dir=./output/sinewave
 #data_row=17712   # row, default is 1
-#data_col=6       # col, default is 1
+#data_col=6       # col, default is 2
 psd_flag=2        #1:compute power spectral density, 2:sound pressure level(spl) and overall oaspl
 
 [wave]
