@@ -83,6 +83,7 @@ void help_detailed(){
   std::cout<<"---------------------------------------"<<std::endl;
   std::cout<<"  [-i datafile]  name of the data file with its address"<<std::endl;
   std::cout<<"  [-o directory] output directory, default is the same as input"<<std::endl;
+  std::cout<<"  [-spec] for output files with headers and spec suffix"<<std::endl;
   std::cout<<"  [-r row]    of the signal data in the data file, default 1"<<std::endl;
   std::cout<<"  [-c column] of the signal data in the data file, assuming time is at the first column, default 2"<<std::endl;
   std::cout<<"\n  [-n N] number of data in one window subset, or in the whole sample if no shifting/averaging, must be 2^{k}, k is an integer"<<std::endl;
@@ -91,9 +92,9 @@ void help_detailed(){
   std::cout<<"  [-dt time_step] of the window subset or the whole sample in sec"<<std::endl;
   std::cout<<"  [-w window] name of the window functions, for psd default is hann, for fft default is rectangular"<<std::endl;
   std::cout<<"  [-m number] either 1 or 0 for mean substract, default is 1 to substract the mean"<<std::endl;
-  std::cout<<"\n  [-psd]      compute the power spectral density (psd)"<<std::endl;
-  std::cout<<"  [-pow]      compute the power spectrum"<<std::endl;
-  std::cout<<"  [-spl]      compute the sound pressure level (SPL)"<<std::endl;
+  std::cout<<"\n  [-psd filename]      compute the power spectral density (psd), filename is optional"<<std::endl;
+  std::cout<<"  [-pow filename]      compute the power spectrum, filename is optional"<<std::endl;
+  std::cout<<"  [-spl filename]      compute the sound pressure level (SPL), filename is optional"<<std::endl;
   std::cout<<"  [-peak]     peak preserving averaging fft mode, useful for ensemble averaging with shift=1."<<std::endl;
   std::cout<<"  [-variance] variance preserving averaging fft mode for conserving the signal energy, by default it is forced for psd, power and spl computations"<<std::endl;
   std::cout<<"  [-pref pressure] reference pressure for SPL computation, default is 2e-5 Pa"<<std::endl;

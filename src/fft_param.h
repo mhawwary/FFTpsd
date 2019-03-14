@@ -190,6 +190,10 @@ struct Case_Param{
   unsigned int data_col=1;  // col in the file to extract data
   unsigned int psd_flag=0;
 
+  std::string psd_output_file="DEFAULT";
+  std::string spl_output_file="DEFAULT";
+  unsigned int noheader=1;
+
   FFT_Param fft_param;
   PSD_Param psd_param;
   Wave wave_param;

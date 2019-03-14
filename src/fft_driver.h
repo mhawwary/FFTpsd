@@ -54,8 +54,8 @@ public:
 
     if(case_param_.psd_flag==1){
       ComputePSD();
-    }else if(case_param_.psd_flag==2){
-      ComputePSD();
+    }
+    if(case_param_.psd_flag==2){
       ComputeSPL();
     }
 
@@ -92,6 +92,9 @@ protected:
   void dump_fft_results(const string fname);
   void dump_psd_results(const string fname);
   void dump_spl_results(const string in_fname);
+  void dump_fft_results_nohead(const string fname);
+  void dump_psd_results_nohead(const string fname);
+  void dump_spl_results_nohead(const string in_fname);
 
 protected:
   FFT<double> *fft_=nullptr;

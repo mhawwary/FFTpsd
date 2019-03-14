@@ -78,13 +78,29 @@ void Case_Param::Parse(int argc, char **argv){
   if(cmdline.search("-psd")){
     psd_flag=1;
     psd_param.type_=DENSITY;
+    std::vector<std::string> nominus_vec=cmdline.nominus_followers("-psd");
+    if(nominus_vec.size()>0)
+      psd_output_file=nominus_vec[0];
+    else
+      psd_output_file="DEFAULT";
   }
   if(cmdline.search("-pow")){
     psd_flag=1;
     psd_param.type_=POWER;
+    std::vector<std::string> nominus_vec=cmdline.nominus_followers("-pow");
+    if(nominus_vec.size()>0)
+      psd_output_file=nominus_vec[0];
+    else
+      psd_output_file="DEFAULT";
   }
-  if(cmdline.search("-spl"))
+  if(cmdline.search("-spl")){
     psd_flag=2;
+    std::vector<std::string> nominus_vec=cmdline.nominus_followers("-spl");
+    if(nominus_vec.size()>0)
+      spl_output_file=nominus_vec[0];
+    else
+      spl_output_file="DEFAULT";
+  }
 
   if(psd_flag){
     fft_param.Parse_psd_defaults(cmdline);
@@ -94,6 +110,9 @@ void Case_Param::Parse(int argc, char **argv){
   }else{
     fft_param.Parse(cmdline);
   }
+
+  if(cmdline.search("-spec"))
+    noheader=0;
 
   return;
 
@@ -288,9 +307,9 @@ void FFT_Param::SetupFFTData(const double sample_dt){
   }else{ //shift<=5.e-2;
     aver_flag=false;
     Nt_shifted=0;
-    Lt_sub=Lt;
-    Nt_sub=Nt;
-    dt_sub=dt;
+    Lt=Lt_sub;
+    Nt=Nt_sub;
+    dt=dt_sub;
     Navg=0;
   }
   //note: shift should be thought of as the overlap distance of two Lt_sub

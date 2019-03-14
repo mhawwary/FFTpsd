@@ -59,12 +59,14 @@ void FFT_Driver::Init(){
 }
 
 void FFT_Driver::ComputeFFT(){
+  vector<double> u_sub(fft_param_.Nt_sub,0.); // subset data vector
+  std::copy_n(udata_vec_.begin(),fft_param_.Nt_sub,u_sub.begin());
   if(fft_param_.window_type!=RECTANGULAR && fft_param_.mean_substract) // if windowing substract the mean first
-    SubstractMean(udata_vec_);
+    SubstractMean(u_sub);
 
   for(int itt=0; itt<fft_param_.Nt_sub; itt++)
-    udata_vec_[itt]*=fft_param_.Wwind[itt];
-  fft_->rfft(udata_vec_,fft_vec_);
+    u_sub[itt]*=fft_param_.Wwind[itt];
+  fft_->rfft(u_sub,fft_vec_);
 
   Convert2MagPhaseScaled();
 
@@ -226,20 +228,41 @@ void FFT_Driver::DumpOutputs(){
   std::cout<<"\nfft_fname="<<fname_fft<<std::endl;
   dump_fft_results(fname_fft);
 
-  if(!case_param_.psd_flag==0){
+  if(case_param_.psd_flag==1){
     std::string fname_psd;
-    if(psd_param_.type_==DENSITY)
-      fname_psd=case_param_.output_dir+string("/psd_")+case_param_.output_data_name+string(".dat");
-    else if(psd_param_.type_==POWER)
-      fname_psd=case_param_.output_dir+string("/power_")+case_param_.output_data_name+string(".dat");
+    if(psd_param_.type_==DENSITY){
+      if(case_param_.psd_output_file!="DEFAULT")
+        fname_psd=case_param_.psd_output_file;
+      else
+        fname_psd=case_param_.output_dir+string("/psd_")+case_param_.output_data_name+string(".dat");
+    }else if(psd_param_.type_==POWER){
+      if(case_param_.psd_output_file!="DEFAULT")
+        fname_psd=case_param_.psd_output_file;
+      else
+        fname_psd=case_param_.output_dir+string("/power_")+case_param_.output_data_name+string(".dat");
+    }
     std::cout<<"psd_fname="<<fname_psd<<std::endl;
-    dump_psd_results(fname_psd);
+    dump_psd_results_nohead(fname_psd);
+    if(!case_param_.noheader){
+      fname_psd=remove_extension(fname_psd);
+      fname_psd+=string("_spec.dat");
+      dump_psd_results(fname_psd);
+    }
   }
 
   if(case_param_.psd_flag==2){
-    std::string fname_spl=case_param_.output_dir+string("/SPL_")+case_param_.output_data_name+string(".dat");
+    std::string fname_spl;
+    if(case_param_.spl_output_file!="DEFAULT")
+      fname_spl=case_param_.spl_output_file;
+    else
+      fname_spl=case_param_.output_dir+string("/SPL_")+case_param_.output_data_name+string(".dat");
     std::cout<<"spl_fname="<<fname_spl<<std::endl;
-    dump_spl_results(fname_spl);
+    dump_spl_results_nohead(fname_spl);
+    if(!case_param_.noheader){
+      fname_spl=remove_extension(fname_spl);
+      fname_spl=fname_spl+string("_spec.dat");
+      dump_spl_results(fname_spl);
+    }
   }
 
 }
@@ -387,7 +410,48 @@ void FFT_Driver::dump_spl_results(const string in_fname){
   return;
 }
 
+void FFT_Driver::dump_fft_results_nohead(const string fname_in){
 
+  std::ofstream fout;
+  fout.open(fname_in.c_str());
+  if( !fout.is_open() ) // ...else, create new file...
+    fout.open(fname_in.c_str(), std::ios_base::out | std::ios_base::trunc);
+
+  fout<<std::setprecision(16);
+  for(int iff=0; iff<Nfreq_; iff++)
+    fout<<freq_[iff]<<"   "<<fft_mag_[iff]<<" "<<fft_phase_[iff]<<std::endl;
+
+  return;
+}
+
+void FFT_Driver::dump_psd_results_nohead(const string in_fname){
+
+  std::ofstream fout;
+  fout.open(in_fname.c_str());
+  if( !fout.is_open() ) // ...else, create new file...
+    fout.open(in_fname.c_str(), std::ios_base::out | std::ios_base::trunc);
+
+  fout<<std::setprecision(16);
+  for(int iff=0; iff<Nfreq_; iff++)
+    fout<<freq_[iff]<<"   "<<psd_vec_[iff]<<std::endl;
+
+  return;
+}
+
+void FFT_Driver::dump_spl_results_nohead(const string in_fname){
+
+  std::ofstream fout;
+  fout.open(in_fname.c_str());
+  if( !fout.is_open() ) // ...else, create new file...
+    fout.open(in_fname.c_str(), std::ios_base::out | std::ios_base::trunc);
+
+
+  fout<<std::setprecision(16);
+  for(int iff=0; iff<Nfreq_; iff++)
+    fout<<freq_[iff]<<"   "<<spl_vec_[iff]<<std::endl;
+
+  return;
+}
 
 
 
