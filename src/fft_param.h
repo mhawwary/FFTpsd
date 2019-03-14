@@ -189,6 +189,7 @@ struct Case_Param{
   unsigned int data_row=0;  // row in the file to extract data
   unsigned int data_col=1;  // col in the file to extract data
   unsigned int psd_flag=0;
+  unsigned int spl_flag=0;
 
   std::string psd_output_file="DEFAULT";
   std::string spl_output_file="DEFAULT";

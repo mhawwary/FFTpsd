@@ -30,14 +30,16 @@ void Case_Param::Parse(const std::string &in_fname){
     wave_param.type=string_to_enum<Wave_Form_Type>(gp_input("wave/wave_form","sine",false));
     wave_param.Parse(in_fname);
   }
-
   psd_flag=gp_input("psd_flag",0,false);
-  if(psd_flag){
+  spl_flag=gp_input("spl_flag",0,false);
+
+  if(psd_flag || spl_flag){
     fft_param.Parse_psd_defaults(in_fname);
-    psd_param.Parse(in_fname);
-    psd_param.scaling_factor=FFT<double>::GetWindowScalingFactor(fft_param.window_type,psd_param.type_);
-    if(psd_flag!=0)
-      fft_param.avgfft_mode==VARIANCE; // force it to use this mode for both types of PSD/POWER and SPL
+    fft_param.avgfft_mode==VARIANCE; // force it to use this mode for both types of PSD/POWER and SPL
+    if(psd_flag){
+      psd_param.Parse(in_fname);
+      psd_param.scaling_factor=FFT<double>::GetWindowScalingFactor(fft_param.window_type,psd_param.type_);
+    }
   }else{
     fft_param.Parse(in_fname);
   }
@@ -94,7 +96,7 @@ void Case_Param::Parse(int argc, char **argv){
       psd_output_file="DEFAULT";
   }
   if(cmdline.search("-spl")){
-    psd_flag=2;
+    spl_flag=1;
     std::vector<std::string> nominus_vec=cmdline.nominus_followers("-spl");
     if(nominus_vec.size()>0)
       spl_output_file=nominus_vec[0];
@@ -102,11 +104,13 @@ void Case_Param::Parse(int argc, char **argv){
       spl_output_file="DEFAULT";
   }
 
-  if(psd_flag){
+  if(psd_flag || spl_flag){
     fft_param.Parse_psd_defaults(cmdline);
     fft_param.avgfft_mode==VARIANCE; // force it to use this mode for both types of PSD/POWER and SPL
-    psd_param.Parse(cmdline);
-    psd_param.scaling_factor=FFT<double>::GetWindowScalingFactor(fft_param.window_type,psd_param.type_);
+    if(psd_flag){
+      psd_param.Parse(cmdline);
+      psd_param.scaling_factor=FFT<double>::GetWindowScalingFactor(fft_param.window_type,psd_param.type_);
+    }
   }else{
     fft_param.Parse(cmdline);
   }

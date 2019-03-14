@@ -5,7 +5,8 @@ namespace fftspc {
 void FFT_Driver::Init(){
 
   fft_param_=case_param_.fft_param;
-  psd_param_=case_param_.psd_param;
+  if(case_param_.psd_flag)
+    psd_param_=case_param_.psd_param;
 
   if(case_param_.data_fname=="NO_INPUT_FILE"){
     std::cout<<"output_dir=" <<case_param_.output_dir<<std::endl;
@@ -160,7 +161,7 @@ void FFT_Driver::ComputeSPL(){
   double sqroot2=std::sqrt(2.);
   double spl_scaling=1.0;
 
-  if(!psd_param_.bin_aver_flag){
+  //if(!psd_param_.bin_aver_flag){
     spl_vec_.resize(Nfreq_,0.);
 
     p_abs=std::abs(fft_vec_[0])*spl_scaling;
@@ -178,9 +179,9 @@ void FFT_Driver::ComputeSPL(){
     p_abs_sum+=p_abs;
     oaspl_=20.*std::log10(p_abs_sum/psd_param_.p_ref);
 
-  }else{
+  //}else{
 
-  }
+  //}
 
   return;
 }
@@ -250,7 +251,7 @@ void FFT_Driver::DumpOutputs(){
     }
   }
 
-  if(case_param_.psd_flag==2){
+  if(case_param_.spl_flag==1){
     std::string fname_spl;
     if(case_param_.spl_output_file!="DEFAULT")
       fname_spl=case_param_.spl_output_file;
@@ -396,16 +397,16 @@ void FFT_Driver::dump_spl_results(const string in_fname){
   fout<<"# shift="<<fft_param_.shift*100<<"\%";
   fout<<",\twindow="<<enum_to_string<FFT_WINDOW_Type>(fft_param_.window_type);
   fout<<",\tN of windows="<<fft_param_.aver_count<<std::endl;
-  if(!psd_param_.bin_aver_flag){
+  //if(!psd_param_.bin_aver_flag){
     fout<<"# Nfreq="<<Nfreq_<<",\tdf="<<freq_[1]<<",\tfs="<<1./fft_param_.dt_sub<<std::endl;
     fout<<"# OASPL(dB)="<<oaspl_<<std::endl;
     fout<<"# freq(Hz), SPL(dB)"<<std::endl;
     fout<<std::setprecision(16);
     for(int iff=0; iff<Nfreq_; iff++)
       fout<<freq_[iff]<<"   "<<spl_vec_[iff]<<std::endl;
-  }else{
+  //}else{
 
-  }
+  //}
 
   return;
 }

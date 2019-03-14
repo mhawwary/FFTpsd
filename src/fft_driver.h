@@ -52,10 +52,10 @@ public:
     else
       ComputeFFT();
 
-    if(case_param_.psd_flag==1){
+    if(case_param_.psd_flag){
       ComputePSD();
     }
-    if(case_param_.psd_flag==2){
+    if(case_param_.spl_flag){
       ComputeSPL();
     }
 
