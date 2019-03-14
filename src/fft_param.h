@@ -179,7 +179,6 @@ struct Wave{
   void DumpWaveSignal(std::string fname_in,const std::vector<double> time_vec,std::vector<double> data_vec);
 };
 
-
 struct Case_Param{
   // Case parameters:
   //-----------------------------
@@ -204,5 +203,9 @@ struct Case_Param{
 //  void Reset();
 };
 
+void help_short();
+
+
 }
+
 #endif

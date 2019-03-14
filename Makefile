@@ -68,8 +68,8 @@ default: all
 help:	
 	@echo 'help'
 
-all: fftpsd.exe
-fftpsd.exe: $(OBJS)
+all: fftpsd
+fftpsd: $(OBJS)
 	$(CXX) $(OPTS) -o $(BIN)$@ $+
 
 $(OBJ)%.o : %.cpp 
@@ -86,6 +86,6 @@ $(OBJ)string_to_type.o: string_to_type.c
 
 clean:
 	rm -f ./$(OBJ)*.o ./$(BIN)*.exe 
-	rm -f *.exe *.o
+	rm -f *.exe *.o ./$(BIN)fftpsd* fftpsd*
 	@echo  removing all object and executable files
 
