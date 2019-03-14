@@ -85,12 +85,14 @@ void help_detailed(){
   std::cout<<"  [-o directory] output directory, default is the same as input"<<std::endl;
   std::cout<<"  [-spec] for output files with headers and spec suffix"<<std::endl;
   std::cout<<"  [-r row]    of the signal data in the data file, default 1"<<std::endl;
-  std::cout<<"  [-c column] of the signal data in the data file, assuming time is at the first column, default 2"<<std::endl;
+  std::cout<<"  [-c column] of the signal data in the data file, default 2, assuming time is at the first column"<<std::endl;
   std::cout<<"\n  [-n N] number of data in one window subset, or in the whole sample if no shifting/averaging, must be 2^{k}, k is an integer"<<std::endl;
   std::cout<<"  [-l Lt_sub] window length in sec or the whole sample length if no shifting/averaging"<<std::endl;
   std::cout<<"  [-s shift] a value in [0.,1.] to indicate the ratio of data to be shifted"<<std::endl;
+  std::cout<<"             shift defaults: 0.5 for psd/pow/spl, 0. for fft"<<std::endl;
   std::cout<<"  [-dt time_step] of the window subset or the whole sample in sec"<<std::endl;
   std::cout<<"  [-w window] name of the window functions, for psd default is hann, for fft default is rectangular"<<std::endl;
+  std::cout<<"              windows: hann,hamm,bartlett,welch,blackman,triangular,rectangular"<<std::endl;
   std::cout<<"  [-m number] either 1 or 0 for mean substract, default is 1 to substract the mean"<<std::endl;
   std::cout<<"\n  [-psd filename]      compute the power spectral density (psd), filename is optional"<<std::endl;
   std::cout<<"  [-pow filename]      compute the power spectrum, filename is optional"<<std::endl;
