@@ -2,25 +2,31 @@
 COMP	= GCC
 CODE	= RELEASE
 OPENMP	= NO
+PLATFORM = WINDOWS
 
 # Specifing Standard Variables:
-CXX	= g++ -std=gnu++11 #-pedantic-errors # c++ gcc compiler
-CXXFLAGS=       # C++ compiler flags
-LDLFLAGS=	# linker flags
-CPPFLAGS=	# c/c++ preprocessor flags
+ifeq ($(PLATFORM), LINUX )
+	CXX = g++ #-pedantic-errors # c++ gcc compiler
+	LDLFLAGS =  # linker flags
+else
+	CXX = x86_64-w64-mingw32-g++ # c++ gcc compiler
+	LDLFLAGS = -static-libgcc -static-libstdc++ # linker flags
+endif
+CXXFLAGS= -std=gnu++11 # C++ compiler flags
+CPPFLAGS=  # c/c++ preprocessor flags
 
-OPTS	= 	# optimization flags and other options
+OPTS	= # optimization flags and other options
 
 # Includes
 OPTS	+= -I include
 
 ifeq ($(CODE),RELEASE)
-	ifeq ($(COMP),GCC)
-		OPTS	+= -O3 
+    ifeq ($(COMP),GCC)
+        OPTS += -O3  
 	endif
 	
 	ifeq ($(COMP),INTEL)
-		OPTS	+= -xHOST -fast
+	    OPTS   += -xHOST -fast
 	endif	
 endif
 
@@ -68,14 +74,14 @@ default: all
 help:	
 	@echo 'help'
 
-all: fftpsd
-fftpsd: $(OBJS)
-	$(CXX) $(OPTS) -o $(BIN)$@ $+
+all: fftpsd.exe
+fftpsd.exe: $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OPTS) $(LDLFLAGS) -o $(BIN)$@ $+
 
 $(OBJ)%.o : %.cpp 
-	$(CXX) $(OPTS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(OPTS) -c -o $@ $<
 $(OBJ)%.o : %.c 
-	$(CXX) $(OPTS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(OPTS) -c -o $@ $<
 
 $(OBJo): $(src_cpp)
 $(OBJ)fft_driver.o: fft_driver.cpp 
