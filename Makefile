@@ -2,10 +2,10 @@
 COMP	= GCC
 CODE	= RELEASE
 OPENMP	= NO
-PLATFORM = WINDOWS
+PLATFORM = LINUX
 
 # Specifing Standard Variables:
-ifeq ($(PLATFORM), LINUX )
+ifeq ($(PLATFORM), LINUX)
 	CXX = g++ #-pedantic-errors # c++ gcc compiler
 	LDLFLAGS =  # linker flags
 else
