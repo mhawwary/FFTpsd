@@ -22,7 +22,7 @@
 
 //! Prints the error message, the source file and line number, and exits
 #define FatalError_exit(s) {                                             \
-  printf("\nFatal error '%s' at %s:%d\n",s,__FILE__,__LINE__);        \
+  printf("\nFatal error '%s' at %s:%d\n\n",s,__FILE__,__LINE__);        \
   exit(1); }
 
 //! Prints the error message, the source file and line number, but do not exit
@@ -36,7 +36,7 @@
   size_t size;                                                      \
   size = backtrace(array,10);                                       \
   printf("\nFatal error '%s' at %s:%d\n\n",s,__FILE__,__LINE__);      \
-  backtrace_symbols_fd(array, size, STDERR_FILENO);                 \
+  /*backtrace_symbols_fd(array, size, STDERR_FILENO); \ */          \
   exit(1); }
 
 //! Prints the error message, the source file and line number, and exits

@@ -229,10 +229,10 @@ FFT_Param& FFT_Param::operator =(const FFT_Param& Rdata_in){
 
 void FFT_Param::SetupFFTData(const double sample_dt){
   // note that sample_dt cannot be zero, otherwise this function cannot work
-  if(Lt_sub<=sample_dt || Lt_sub<=1.e-5){
-    FatalError_exit("Fatal error, fft_param window length is too short or zero");
+  if(Lt_sub<=sample_dt || Lt_sub<=1.e-10){
+    FatalErrorST("Fatal error, fft_param window length is too short < 1e-10 or less than dt");
   }else if(sample_dt<=1.e-11){
-    FatalError_exit("Fatal error, global dt is zero");
+    FatalErrorST("Fatal error, global dt is < 1e-11");
   }
 
   if(dt_sub>sample_dt && fabs(dt_sub-sample_dt)>=1e-2*sample_dt){ // dt is specified as an input and not equal to the simulation dt
