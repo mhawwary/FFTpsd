@@ -8,7 +8,14 @@
 #pragma once
 
 #include <cstdlib>
-#include <execinfo.h>
+#ifdef _WIN32
+// #include <direct.h>       // those are for mkdir and chdir and other directory and filesystem commands
+#elif defined __linux__
+ #include <execinfo.h>
+// #include <sys/types.h>    // those are for mkdir and chdir and other directory and filesystem commands
+// #include <sys/stat.h>     // those are for mkdir and chdir and other directory and filesystem commands
+#endif
+//#include <execinfo.h>
 #include <stdio.h>
 #include <iostream>
 #include <unistd.h>
