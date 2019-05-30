@@ -191,7 +191,7 @@ void FFT_Driver::ReadTimeData(const std::string in_fname){
   std::string local_fname=in_fname;
   open_inputfile_forreading(local_fname,input);
 
-  std::cout<<"Reading data start at ( "<<case_param_.data_row<<","<<case_param_.data_col<<" )"<<std::endl;
+  std::cout<<"Reading data starts at (row,col) = ( "<<case_param_.data_row+1<<","<<case_param_.data_col+1<<" )"<<std::endl;
 
   int i=0;
   std::string line;
@@ -364,8 +364,8 @@ void FFT_Driver::dump_psd_results(const string in_fname){
     fout.open(in_fname.c_str(), std::ios_base::out | std::ios_base::trunc);
 
   fout<<"# INFO: mohammadalhawwary@gmail.com, 01/03/2019"<<std::endl;
-  fout<<"# Nt="<<fft_param_.Nt<<",\tNt_sub="<<fft_param_.Nt_sub;fout
-      <<",\tNt data used="<<fft_param_.Nt_sub+fft_param_.Navg*fft_param_.Nt_shifted<<std::endl;
+  fout<<"# Ntotal="<<fft_param_.Nt<<",\tNt data used="<<fft_param_.Nt_sub+fft_param_.Navg*fft_param_.Nt_shifted<<std::endl;
+  fout<<"# Nt_window_subset="<<fft_param_.Nt_sub<<",\tLt_sub="<<fft_param_.Lt_sub<<" sec,\tdt_sub="<<fft_param_.dt_sub<<std::endl;
   fout<<"# shift="<<fft_param_.shift*100<<"\%";
   fout<<",\twindow="<<enum_to_string<FFT_WINDOW_Type>(fft_param_.window_type);
   fout<<",\tN of windows="<<fft_param_.aver_count<<std::endl;
@@ -392,8 +392,8 @@ void FFT_Driver::dump_spl_results(const string in_fname){
     fout.open(in_fname.c_str(), std::ios_base::out | std::ios_base::trunc);
 
   fout<<"# INFO: mohammadalhawwary@gmail.com, 01/03/2019"<<std::endl;
-  fout<<"# Nt="<<fft_param_.Nt<<",\tNt_sub="<<fft_param_.Nt_sub;fout
-      <<",\tNt data used="<<fft_param_.Nt_sub+fft_param_.Navg*fft_param_.Nt_shifted<<std::endl;
+  fout<<"# Ntotal="<<fft_param_.Nt<<",\tNt data used="<<fft_param_.Nt_sub+fft_param_.Navg*fft_param_.Nt_shifted<<std::endl;
+  fout<<"# Nt_window_subset="<<fft_param_.Nt_sub<<",\tLt_sub="<<fft_param_.Lt_sub<<" sec,\tdt_sub="<<fft_param_.dt_sub<<std::endl;
   fout<<"# shift="<<fft_param_.shift*100<<"\%";
   fout<<",\twindow="<<enum_to_string<FFT_WINDOW_Type>(fft_param_.window_type);
   fout<<",\tN of windows="<<fft_param_.aver_count<<std::endl;
