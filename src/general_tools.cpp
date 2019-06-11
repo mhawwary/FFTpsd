@@ -142,8 +142,9 @@ std::string GetFileExtension(const std::string& FileName)
 
 std::string GetFileDirectory(const std::string& FileName){
   size_t lastdot = FileName.find_last_of("/");
-  if (lastdot == std::string::npos) return FileName;
-  return FileName.substr(0, lastdot);
+  if (lastdot == std::string::npos) return "./";
+  std::string directory=FileName.substr(0, lastdot)+"/";
+  return directory;
 }
 
 bool is_a_comment_line(const std::string& line_in){

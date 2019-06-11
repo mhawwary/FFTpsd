@@ -14,7 +14,7 @@ void FFT_Driver::Init(){
     fft_param_.dt=case_param_.wave_param.dt;
     fft_param_.Lt=case_param_.wave_param.t_final-case_param_.wave_param.t_start-fft_param_.dt;
     case_param_.wave_param.GetWaveSignal(time_vec_,udata_vec_);
-    std::string ofname=case_param_.output_dir+std::string("/u_data.dat");
+    std::string ofname=case_param_.output_dir+std::string("u_data.dat");
     case_param_.wave_param.DumpWaveSignal(ofname,time_vec_,udata_vec_);
     // removing the last periodic element for fft to work
     time_vec_.erase(time_vec_.end()-1);
@@ -225,7 +225,7 @@ void FFT_Driver::DumpOutputs(){
       std::cout<<freq_[i]<<"     "<<fft_mag_[i]<<std::endl;
   }
 
-  std::string fname_fft=case_param_.output_dir+string("/fft_")+case_param_.output_data_name+string(".dat");
+  std::string fname_fft=case_param_.output_dir+string("fft_")+case_param_.output_data_name+string(".dat");
   std::cout<<"\nfft_fname="<<fname_fft<<std::endl;
   dump_fft_results(fname_fft);
 
@@ -235,12 +235,12 @@ void FFT_Driver::DumpOutputs(){
       if(case_param_.psd_output_file!="DEFAULT")
         fname_psd=case_param_.psd_output_file;
       else
-        fname_psd=case_param_.output_dir+string("/psd_")+case_param_.output_data_name+string(".dat");
+        fname_psd=case_param_.output_dir+string("psd_")+case_param_.output_data_name+string(".dat");
     }else if(psd_param_.type_==POWER){
       if(case_param_.psd_output_file!="DEFAULT")
         fname_psd=case_param_.psd_output_file;
       else
-        fname_psd=case_param_.output_dir+string("/power_")+case_param_.output_data_name+string(".dat");
+        fname_psd=case_param_.output_dir+string("power_")+case_param_.output_data_name+string(".dat");
     }
     std::cout<<"psd_fname="<<fname_psd<<std::endl;
     dump_psd_results_nohead(fname_psd);
@@ -256,7 +256,7 @@ void FFT_Driver::DumpOutputs(){
     if(case_param_.spl_output_file!="DEFAULT")
       fname_spl=case_param_.spl_output_file;
     else
-      fname_spl=case_param_.output_dir+string("/SPL_")+case_param_.output_data_name+string(".dat");
+      fname_spl=case_param_.output_dir+string("SPL_")+case_param_.output_data_name+string(".dat");
     std::cout<<"spl_fname="<<fname_spl<<std::endl;
     dump_spl_results_nohead(fname_spl);
     if(!case_param_.noheader){

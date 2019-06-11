@@ -10,14 +10,14 @@ void Case_Param::Parse(const std::string &in_fname){
 
   std::string temp=remove_extension(data_fname);
   std::size_t last_slash=temp.find_last_of("/");
-  output_data_name=temp.substr(last_slash+1,temp.size());
+  if (last_slash == std::string::npos) // meaning the name is absolute without any directory, i.e., working in current directory
+    output_data_name=temp;
+  else
+    output_data_name=temp.substr(last_slash+1,temp.size());
 
   output_dir=gp_input("output_dir",input_dir.c_str(),false);
-  if(output_dir.find_last_of("/")==output_dir.size()-1){
-    std::string temp=remove_from_end_up_to_string("/",output_dir);
-    output_dir.clear();
-    output_dir=temp;
-  }
+  if(output_dir.find_last_of("/") != output_dir.size()-1) // correct if it does not include "/" at the end
+    output_dir+="/";
 
   data_row=gp_input("data_row",0,false);
   data_col=gp_input("data_col",1,false);
@@ -61,14 +61,14 @@ void Case_Param::Parse(int argc, char **argv){
   input_dir=GetFileDirectory(data_fname);
   std::string temp=remove_extension(data_fname);
   std::size_t last_slash=temp.find_last_of("/");
-  output_data_name=temp.substr(last_slash+1,temp.size());
+  if (last_slash == std::string::npos) // meaning the name is absolute without any directory, i.e., working in current directory
+    output_data_name=temp;
+  else
+    output_data_name=temp.substr(last_slash+1,temp.size());
 
   output_dir=cmdline.follow(input_dir.c_str(),2,"-o","--outdir");
-  if(output_dir.find_last_of("/")==output_dir.size()-1){
-    std::string temp=remove_from_end_up_to_string("/",output_dir);
-    output_dir.clear();
-    output_dir=temp;
-  }
+  if(output_dir.find_last_of("/") != output_dir.size()-1) // correct if -o does not include "/" at the end
+    output_dir+="/";
 
   data_row=cmdline.follow(0,"-r");
   data_col=cmdline.follow(1,"-c");
