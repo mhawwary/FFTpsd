@@ -32,11 +32,7 @@
 
 //! Prints the error message, the source file ane line number, the full stack trace, and exits
 #define FatalErrorST(s) {                                           \
-  void* array[10];                                                  \
-  size_t size;                                                      \
-  size = backtrace(array,10);                                       \
   printf("\nFatal error '%s' at %s:%d\n\n",s,__FILE__,__LINE__);      \
-  /*backtrace_symbols_fd(array, size, STDERR_FILENO); \ */          \
   exit(1); }
 
 //! Prints the error message, the source file and line number, and exits

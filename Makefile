@@ -8,9 +8,11 @@ PLATFORM = LINUX
 ifeq ($(PLATFORM), LINUX)
 	CXX = g++ #-pedantic-errors # c++ gcc compiler
 	LDLFLAGS =  # linker flags
+        BINNAME = fftpsd
 else
 	CXX = x86_64-w64-mingw32-g++ # c++ gcc compiler
 	LDLFLAGS = -static-libgcc -static-libstdc++ # linker flags
+        BINNAME = fftpsd.exe
 endif
 CXXFLAGS= -std=gnu++11 # C++ compiler flags
 CPPFLAGS=  # c/c++ preprocessor flags
@@ -74,8 +76,8 @@ default: all
 help:	
 	@echo 'help'
 
-all: fftpsd.exe
-fftpsd.exe: $(OBJS)
+all: $(BINNAME)
+$(BINNAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OPTS) $(LDLFLAGS) -o $(BIN)$@ $+
 
 $(OBJ)%.o : %.cpp 
