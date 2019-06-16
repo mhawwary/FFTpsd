@@ -28,12 +28,16 @@ void FFT_Driver::Init(){
     fft_param_.Lt=time_vec_[fft_param_.Nt-1]-time_vec_[0];
     fft_param_.dt=time_vec_[1]-time_vec_[0];
     if(fft_param_.Nt_sub>0)
-      fft_param_.Lt_sub=fft_param_.dt*fft_param_.Nt_sub;
+      fft_param_.Lt_sub=fft_param_.dt*(fft_param_.Nt_sub-1);
   }
 
-  fft_param_.SetupFFTData(fft_param_.dt);
-
-  fft_= new FFT<double>(fft_param_.Nt_sub,"real");
+  if(fft_param_.DFT_mode){
+    fft_param_.SetupDFTData(fft_param_.dt);
+    fft_= new FFT<double>(fft_param_.Nt_sub,"DFT");
+  }else{
+    fft_param_.SetupFFTData(fft_param_.dt);
+    fft_= new FFT<double>(fft_param_.Nt_sub,"real");
+  }
 
   std::cout<<"FFT: N data actually used     ="<<fft_param_.Nt_sub+fft_param_.Navg*fft_param_.Nt_shifted<<std::endl;
   std::cout<<"FFT: N data in a window subset="<<fft_param_.Nt_sub<<std::endl;
@@ -67,7 +71,11 @@ void FFT_Driver::ComputeFFT(){
 
   for(int itt=0; itt<fft_param_.Nt_sub; itt++)
     u_sub[itt]*=fft_param_.Wwind[itt];
-  fft_->rfft(u_sub,fft_vec_);
+
+  if(fft_param_.DFT_mode)
+    fft_->dft(u_sub,fft_vec_);
+  else
+    fft_->rfft(u_sub,fft_vec_);
 
   Convert2MagPhaseScaled();
 
@@ -95,7 +103,11 @@ void FFT_Driver::ComputeFFTavg(){
     }
 //    if(fft_param_.window_type!=RECTANGULAR && fft_param_.mean_substract) // if windowing substract the mean first
 //      SubstractMean(u_sub);
-    fft_->rfft(u_sub,fft_vec_);
+
+    if(fft_param_.DFT_mode)
+      fft_->dft(u_sub,fft_vec_);
+    else
+      fft_->rfft(u_sub,fft_vec_);
     AccumulateFFT(fft_param_.avgfft_mode,fft_param_.wind_scaling,fft_vec_
                   ,mag_sum,fft_sum_real,fft_sum_imag);
   }
@@ -225,7 +237,11 @@ void FFT_Driver::DumpOutputs(){
       std::cout<<freq_[i]<<"     "<<fft_mag_[i]<<std::endl;
   }
 
-  std::string fname_fft=case_param_.output_dir+string("fft_")+case_param_.output_data_name+string(".dat");
+  std::string fname_fft;
+  if(fft_param_.DFT_mode)
+    fname_fft=case_param_.output_dir+string("dft_")+case_param_.output_data_name+string(".dat");
+  else
+    fname_fft=case_param_.output_dir+string("fft_")+case_param_.output_data_name+string(".dat");
   std::cout<<"\nfft_fname="<<fname_fft<<std::endl;
   dump_fft_results(fname_fft);
 

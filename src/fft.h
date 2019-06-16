@@ -47,6 +47,9 @@ namespace  fftspc {
       if(in_mode=="real"){
         real_mode=true;
         Init_real(n_data_size);
+      }else if(in_mode=="DFT"){
+        dft_mode=true;
+        Init_dft(n_data_size);
       }else{
         Init(n_data_size);
       }
@@ -69,6 +72,7 @@ namespace  fftspc {
     }
 
     virtual ~FFT(void);
+    void dft(const vector u_data,cvector &u_fft);
     template<typename T1, typename T2>
     void   fft(const T1 u_data,T2 &u_fft);  //in:real/complex data, out:complex fft
     void  ifft(const cvector u_fft, cvector &u_data); //in:complex fft,  out:real data
@@ -99,6 +103,7 @@ namespace  fftspc {
   protected:
     void Init(const int n_data_size);
     void Init_real(const int n_data_size);
+    void Init_dft(const int n_data_size);
     template<typename TT>
     void bit_reverse(TT &u_data, const int in_data_size); // bit reverse of 1D array
     void fft_inplace(cvector &u_fft, const int local_n, const int local_n_levels);
@@ -108,8 +113,10 @@ namespace  fftspc {
 
   protected:
     bool real_mode=false;  // if true then we only compute the positive frequency part for a real input
+    bool dft_mode=false;  // use DFT instead of FFT
     cmatrix W_arr;
     cmatrix Wi_arr;
+    cvector Wd_arr,Wdi_arr;
     ivector m_arr;
     ivector m_2_arr;
     int n_data;          // n

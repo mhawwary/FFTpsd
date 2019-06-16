@@ -224,6 +224,8 @@ FFT_Param& FFT_Param::operator =(const FFT_Param& Rdata_in){
   avgfft_mode=Rdata_in.avgfft_mode;
   wind_scaling=Rdata_in.wind_scaling;
   mean_substract=Rdata_in.mean_substract;
+
+  DFT_mode=Rdata_in.DFT_mode;
   return *this;
 }
 
@@ -295,6 +297,70 @@ void FFT_Param::SetupFFTData(const double sample_dt){
         Nt_sub=N_temp;
       }
     }
+  }
+
+  if(shift>5.e-2){ // anything less than 5% is no averaging or overlapping
+    aver_count=0;
+    aver_flag=true;
+    if(shift+1.e-5<1.)
+      Nt_shifted=std::round(Nt_sub*shift);
+    else // shift==1 meaning complete overlap and ensemble average
+      Nt_shifted=Nt_sub;
+
+    Navg=(Nt-Nt_sub)/Nt_shifted;
+    aver_count=Navg+1;
+
+  }else{ //shift<=5.e-2;
+    aver_flag=false;
+    Nt_shifted=0;
+    Lt=Lt_sub;
+    Nt=Nt_sub;
+    dt=dt_sub;
+    Navg=0;
+  }
+  //note: shift should be thought of as the overlap distance of two Lt_sub
+
+  if(window_type==HANN){
+    FFT<double>::Hanning(Nt_sub,"Periodic",avgfft_mode,Wwind,wind_scaling);
+  }else if(window_type==HAMM){
+    FFT<double>::Hamming(Nt_sub,"Periodic",avgfft_mode,Wwind,wind_scaling);
+  }else if(window_type==TRIANGULAR){
+    FFT<double>::Triangular(Nt_sub,Nt_sub,avgfft_mode,Wwind,wind_scaling);
+  }else if(window_type==BARTLETT){
+    FFT<double>::Bartlett(Nt_sub,"Periodic",avgfft_mode,Wwind,wind_scaling);
+  }else if(window_type==WELCH){
+    FFT<double>::Welch(Nt_sub,"Periodic",avgfft_mode,Wwind,wind_scaling);
+  }else if(window_type==BLACKMAN){
+    FFT<double>::Blackman(Nt_sub,"Periodic",avgfft_mode,Wwind,wind_scaling);
+  }else if(window_type==RECTANGULAR){  // rectangular or no windowing
+    Wwind.resize(Nt_sub);
+    std::fill_n(Wwind.begin(),Nt_sub,1.);
+    wind_scaling=1.;
+  }
+
+  return;
+}
+
+void FFT_Param::SetupDFTData(const double sample_dt){
+  // note that sample_dt cannot be zero, otherwise this function cannot work
+  if(Lt_sub<=sample_dt || Lt_sub<=1.e-10){
+    FatalErrorST("Fatal error, fft_param window length is too short < 1e-10 or less than dt");
+  }else if(sample_dt<=1.e-11){
+    FatalErrorST("Fatal error, global dt is < 1e-11");
+  }
+
+  if(dt_sub>sample_dt && fabs(dt_sub-sample_dt)>=1e-2*sample_dt){ // dt is specified as an input and not equal to the simulation dt
+    // first check if dt_sub is an integer multiple of sample_dt
+    int temp_int=std::round(dt_sub/sample_dt);
+    dt_sub = temp_int*sample_dt;
+    // second check if Lt_sub is an integer number of dt_sub
+    Nt_sub=std::round(Lt_sub/dt_sub)+1; // this ensures we are not less than Lt_sub
+    Lt_sub=(Nt_sub-1)*dt_sub; // at this point N_temp is integer and Lt_sub is adjusted
+  }else{ // dt is either unspecified or very close to the simulation dt
+    dt_sub=sample_dt;  // let it be the dt_sim at the beginning
+    // first check if Lt_sub is an integer number of sample_dt
+    Nt_sub=std::round(Lt_sub/dt_sub)+1; // this ensures we are not less than Lt_sub
+    Lt_sub=(Nt_sub-1)*dt_sub; // adjust to the new Lt_sub
   }
 
   if(shift>5.e-2){ // anything less than 5% is no averaging or overlapping
