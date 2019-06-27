@@ -20,9 +20,11 @@ void Case_Param::Parse(const std::string &in_fname){
     output_dir+="/";
 
   data_row=gp_input("data_row",0,false);
+  data_lastrow=gp_input("data_lastrow",1e7,false);
   data_col=gp_input("data_col",1,false);
 
   if(data_row>0) data_row--;
+  if(data_lastrow>0) data_lastrow--;
   if(data_col>1) data_col--;
 
   if(data_fname=="NO_INPUT_FILE"){
@@ -71,9 +73,11 @@ void Case_Param::Parse(int argc, char **argv){
     output_dir+="/";
 
   data_row=cmdline.follow(0,"-r");
+  data_lastrow=cmdline.follow(1e7,"-q");
   data_col=cmdline.follow(1,"-c");
 
   if(data_row>0) data_row--;
+  if(data_lastrow>0) data_lastrow--;
   if(data_col>1) data_col--;
 
   psd_flag=0;
@@ -419,9 +423,11 @@ void help_short(){
   std::cout<<"           [-n N] "<<std::endl;
   std::cout<<"           [-psd] or [-pow] or [-spl]"<<std::endl;
 
+  std::cout<<"\n       If DFT is preferred just add to your arguments the flag [-dft]"<<std::endl;
+
   std::cout<<"\nfor a detailed input list and discription use [--help]\n";
 
-  std::cout<<"\nAlternatively, you can just parse an input parsing file as follows: fftpsd inputfile\n";
+  //std::cout<<"\nAlternatively, you can just parse an input parsing file as follows: fftpsd inputfile\n";
   exit(0);
 }
 

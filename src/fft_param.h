@@ -67,11 +67,11 @@ struct FFT_Param{
     GetPot input(in_fname.c_str());
     Nt_sub=input("fft/N",0,false);
     Lt_sub=input("fft/window_length",0.,false);
-    double dt_temp=0.;
+    double dt_temp=1.e-20;
     if(Nt_sub>0)
         dt_temp=Lt_sub/(Nt_sub-1);  // a default value
     dt_sub=input("fft/dt",dt_temp,false);
-    if(Lt_sub<=1.e-5)
+    if(Lt_sub<=1.e-10)
       Lt_sub=dt_sub*Nt_sub;
     shift=input("fft/shift",0.,false); //default no shifting or windowing
     window_type=string_to_enum<FFT_WINDOW_Type>(input("fft/window","RECTANGULAR",false));
@@ -95,11 +95,11 @@ struct FFT_Param{
     GetPot input(in_fname.c_str());
     Nt_sub=input("fft/N",0,false);
     Lt_sub=input("fft/window_length",0.,false);
-    double dt_temp=0.;
+    double dt_temp=1.e-20;
     if(Nt_sub>0)
         dt_temp=Lt_sub/(Nt_sub-1);  // a default value
     dt_sub=input("fft/dt",dt_temp,false);
-    if(Lt_sub<=1.e-5)
+    if(Lt_sub<=1.e-10)
       Lt_sub=dt_sub*Nt_sub;
     shift=input("fft/shift",0.5,false); //default 0.5 shifting
     window_type=string_to_enum<FFT_WINDOW_Type>(input("fft/window","HANN",false));
@@ -151,7 +151,7 @@ struct FFT_Param{
     if(Nt_sub>0)
         dt_temp=Lt_sub/(Nt_sub-1);  // a default value
     dt_sub=cmdline.follow(dt_temp,"-dt");
-    if(Lt_sub<=1.e-5)
+    if(Lt_sub<=1.e-10)
       Lt_sub=dt_sub*(Nt_sub-1);
     shift=cmdline.follow(0.5,"-s"); //default 50% overlap
     window_type=string_to_enum<FFT_WINDOW_Type>(cmdline.follow("HANN","-w"));
@@ -204,8 +204,9 @@ struct Case_Param{
   std::string output_data_name="NO_INPUT_FILE";
   std::string input_dir;
   std::string output_dir;
-  unsigned int data_row=0;  // row in the file to extract data
-  unsigned int data_col=1;  // col in the file to extract data
+  unsigned long int data_row=0;     // firt row in the file to extract data
+  unsigned long int data_lastrow=1e7; // last row in the file to extract data
+  unsigned int data_col=1;     // col in the file to extract data
   unsigned int psd_flag=0;
   unsigned int spl_flag=0;
 
