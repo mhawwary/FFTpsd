@@ -28,12 +28,30 @@ void FFT_Driver::Init(){
     fft_param_.Lt=time_vec_[fft_param_.Nt-1]-time_vec_[0];
     fft_param_.dt=time_vec_[1]-time_vec_[0];
     if(fft_param_.Nt_sub>0)
-      fft_param_.Lt_sub=fft_param_.dt*fft_param_.Nt_sub;
+      fft_param_.Lt_sub=fft_param_.dt*(fft_param_.Nt_sub-1);
   }
 
-  fft_param_.SetupFFTData(fft_param_.dt);
+  if(fft_param_.DFT_mode){
+    fft_param_.SetupDFTData(fft_param_.dt);
+    if(fft_param_.Nt_sub>10000){
+      std::cout<<"WARNING: the number of data points for DFT exceeded 10000, this will take some time to compute";
+      std::cout<<"\n         please consider using an FFT algorithm instead, i.e., N=2^{k}, k is integer"<<std::endl;
+    }
+  }else{
+    fft_param_.SetupFFTData(fft_param_.dt);
+  }
 
-  fft_= new FFT<double>(fft_param_.Nt_sub,"real");
+  if(fft_param_.Nt_sub>(case_param_.data_lastrow-case_param_.data_row)){
+    std::string str_message="The input data range (r:q,c) is less than the required N="
+                             +std::to_string(fft_param_.Nt_sub)+" number of data points ";
+    FatalErrorST(str_message.c_str());
+  }
+
+  if(fft_param_.DFT_mode){
+    fft_= new FFT<double>(fft_param_.Nt_sub,"DFT");
+  }else{
+    fft_= new FFT<double>(fft_param_.Nt_sub,"real");
+  }
 
   std::cout<<"FFT: N data actually used     ="<<fft_param_.Nt_sub+fft_param_.Navg*fft_param_.Nt_shifted<<std::endl;
   std::cout<<"FFT: N data in a window subset="<<fft_param_.Nt_sub<<std::endl;
@@ -67,7 +85,11 @@ void FFT_Driver::ComputeFFT(){
 
   for(int itt=0; itt<fft_param_.Nt_sub; itt++)
     u_sub[itt]*=fft_param_.Wwind[itt];
-  fft_->rfft(u_sub,fft_vec_);
+
+  if(fft_param_.DFT_mode)
+    fft_->dft(u_sub,fft_vec_);
+  else
+    fft_->rfft(u_sub,fft_vec_);
 
   Convert2MagPhaseScaled();
 
@@ -95,7 +117,11 @@ void FFT_Driver::ComputeFFTavg(){
     }
 //    if(fft_param_.window_type!=RECTANGULAR && fft_param_.mean_substract) // if windowing substract the mean first
 //      SubstractMean(u_sub);
-    fft_->rfft(u_sub,fft_vec_);
+
+    if(fft_param_.DFT_mode)
+      fft_->dft(u_sub,fft_vec_);
+    else
+      fft_->rfft(u_sub,fft_vec_);
     AccumulateFFT(fft_param_.avgfft_mode,fft_param_.wind_scaling,fft_vec_
                   ,mag_sum,fft_sum_real,fft_sum_imag);
   }
@@ -191,14 +217,20 @@ void FFT_Driver::ReadTimeData(const std::string in_fname){
   std::string local_fname=in_fname;
   open_inputfile_forreading(local_fname,input);
 
-  std::cout<<"Reading data starts at (row,col) = ( "<<case_param_.data_row+1<<","<<case_param_.data_col+1<<" )"<<std::endl;
+  if(case_param_.data_lastrow<0.99e7)
+    std::cout<<"Reading data in the range (row,col) = ( "<<case_param_.data_row+1<<":"<<case_param_.data_lastrow+1<<","
+             <<case_param_.data_col+1<<" )"<<std::endl;
+  else
+    std::cout<<"Reading data in the range (row,col) = ( "<<case_param_.data_row+1<<":end,"
+             <<case_param_.data_col+1<<" )"<<std::endl;
 
-  int i=0;
+
+  unsigned long int i=0;
   std::string line;
   int n_numbers;
 
-  while(std::getline(input,line)){
-    if(i>=case_param_.data_row){
+  while(std::getline(input,line) && i<=case_param_.data_lastrow ){
+    if(i>=case_param_.data_row ){
       if(!is_a_comment_line(line) && !is_a_text_line(line)){ // make sure you skip text lines
         std::vector<double> line_data;
         line2doubledata(line,line_data,n_numbers);
@@ -225,7 +257,11 @@ void FFT_Driver::DumpOutputs(){
       std::cout<<freq_[i]<<"     "<<fft_mag_[i]<<std::endl;
   }
 
-  std::string fname_fft=case_param_.output_dir+string("fft_")+case_param_.output_data_name+string(".dat");
+  std::string fname_fft;
+  if(fft_param_.DFT_mode)
+    fname_fft=case_param_.output_dir+string("dft_")+case_param_.output_data_name+string(".dat");
+  else
+    fname_fft=case_param_.output_dir+string("fft_")+case_param_.output_data_name+string(".dat");
   std::cout<<"\nfft_fname="<<fname_fft<<std::endl;
   dump_fft_results(fname_fft);
 

@@ -13,6 +13,10 @@ void FFT<T>::Init(const int n_data_size){
   n_data=n_data_size;
   n_data_levels = std::log2(n_data);
   n_2_data=n_data/2;
+  W_arr.clear();
+  Wi_arr.clear();
+  m_arr.clear();
+  m_2_arr.clear();
   W_arr.resize(n_data_levels);
   Wi_arr.resize(n_data_levels);
   m_arr.resize(n_data_levels);
@@ -39,6 +43,10 @@ void FFT<T>::Init_real(const int n_data_size){
   n_2_data=n_data/2;   // n/2
   n_2_data_levels = std::log2(n_2_data);
   n_4_data=n_2_data/2;  // n/4
+  W_arr.clear();
+  Wi_arr.clear();
+  m_arr.clear();
+  m_2_arr.clear();
   W_arr.resize(n_2_data_levels);
   Wi_arr.resize(n_2_data_levels);
   m_arr.resize(n_2_data_levels);
@@ -57,6 +65,8 @@ void FFT<T>::Init_real(const int n_data_size){
 
   T nn_n;
   complex argument,argument2;
+  Wn.clear();
+  Wn2.clear();
   Wn.resize(n_4_data+1);
   Wn2.resize(n_4_data+1);
   for(register int s=0; s<n_4_data+1; s++){
@@ -65,6 +75,32 @@ void FFT<T>::Init_real(const int n_data_size){
     argument2 = ( 2*nn_n-0.5)*PI*I;
     Wn[s]  = std::exp(argument);
     Wn2[s] = std::exp(argument2);
+  }
+
+  return;
+}
+
+template<typename T>
+void FFT<T>::Init_dft(const int n_data_size){
+  n_data=n_data_size;
+  int fftsize=0;
+  if (n_data%2==0)
+    fftsize = int(n_data/2)+1;
+  else
+    fftsize = int((n_data-1)/2)+1;
+  W_arr.clear();
+  Wi_arr.clear();
+  W_arr.resize(fftsize);
+  Wi_arr.resize(fftsize);
+  complex factor0=I*(2.*PI/n_data),factor;
+  for(int s=0; s<fftsize; s++){
+    W_arr[s].resize(n_data,I0);
+    Wi_arr[s].resize(n_data,I0);
+    for(int j=0; j<n_data; j++){
+      factor = (T) s*j*factor0;
+      W_arr[s][j]=exp(-factor);
+      Wi_arr[s][j]=exp(factor);
+    }
   }
 
   return;
@@ -155,6 +191,31 @@ void FFT<T>::folding_realimag_complex2realdata(const cvector h_packed, vector &u
 // Public functions:
 //------------------------------------------------
 template<typename T>
+void FFT<T>::dft(const vector u_data, cvector &u_fft){
+  int fftsize=0;
+  if (u_data.size()%2==0)
+    fftsize = int(u_data.size()/2)+1;
+  else
+    fftsize = int((u_data.size()-1)/2)+1;
+  if(u_fft.size()!=fftsize)
+    u_fft.resize(fftsize); // for safety
+  std::fill_n(u_fft.begin(),fftsize,I0);
+
+  if(u_data.size()!=n_data || dft_mode==false){
+    n_data = u_data.size();
+    dft_mode=true;
+    Init_dft(n_data);
+    std::cout<<"\nReset the infrastructure of complex fft..........\n\n";
+  }
+
+  for(int s=0; s<fftsize; s++)
+    for(int j=0; j<n_data; j++)
+      u_fft[s]+=u_data[j]*W_arr[s][j];
+
+  return;
+}
+
+template<typename T>
 template<typename T1, typename T2>
 void FFT<T>::fft(const T1 u_data, T2 &u_fft){
   u_fft.resize(u_data.size()); // for safety
@@ -186,6 +247,7 @@ void FFT<T>::ifft(const cvector u_fft, cvector &u_data){
 
 template<typename T>
 void FFT<T>::fftfreq(const int local_n, const T sample_spacing, vector &freq_){
+  freq_.clear();
   freq_.resize(local_n);
   int local_n_2=local_n/2;
   T factor = sample_spacing*local_n;
@@ -200,6 +262,7 @@ void FFT<T>::fftfreq(const int local_n, const T sample_spacing, vector &freq_){
 
 template<typename T>
 void FFT<T>::fftintfreq(const int local_n, ivector &freq_){
+  freq_.clear();
   freq_.resize(local_n);
   int local_n_2=local_n/2;
   freq_[0]=0;  // zero/DC or mean value frequency
@@ -308,6 +371,7 @@ void FFT<T>::irfft(const cvector h_fft, vector &u_data){
 template<typename T>
 void FFT<T>::rfftfreq(const int local_n, const T sample_spacing, vector &freq_){
   int local_n_2=local_n/2;
+  freq_.clear();
   freq_.resize(local_n_2+1);
   T factor = sample_spacing*local_n;
   for(register int i=0; i<local_n_2+1; i++)
@@ -318,6 +382,7 @@ void FFT<T>::rfftfreq(const int local_n, const T sample_spacing, vector &freq_){
 template<typename T>
 void FFT<T>::rfftintfreq(const int local_n, ivector &freq_){
   int local_n_2=local_n/2;
+  freq_.clear();
   freq_.resize(local_n_2+1);
   for(register int i=0; i<local_n_2+1; i++)
     freq_[i]=i;
