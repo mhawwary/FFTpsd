@@ -236,9 +236,9 @@ FFT_Param& FFT_Param::operator =(const FFT_Param& Rdata_in){
 void FFT_Param::SetupFFTData(const double sample_dt){
   // note that sample_dt cannot be zero, otherwise this function cannot work
   if(Lt_sub<=sample_dt || Lt_sub<=1.e-10){
-    FatalErrorST("Fatal error, fft_param window length is too short < 1e-10 or less than dt");
+    FatalErrorST("fft_param window length is too short < 1e-10 or less than dt");
   }else if(sample_dt<=1.e-11){
-    FatalErrorST("Fatal error, global dt is < 1e-11");
+    FatalErrorST("global dt is < 1e-11");
   }
 
   if(dt_sub>sample_dt && fabs(dt_sub-sample_dt)>=1e-2*sample_dt){ // dt is specified as an input and not equal to the simulation dt
@@ -261,6 +261,7 @@ void FFT_Param::SetupFFTData(const double sample_dt){
     }
     Nt_sub=N_temp;
     Lt_sub=(Nt_sub-1)*dt_sub;
+    Nt=std::round(Lt/dt_sub)+1.0; // adjust the new Nt to reflect that dt_sub different than dt
 
   }else{ // dt is either unspecified or very close to the simulation dt
     dt_sub=sample_dt;  // let it be the dt_sim at the beginning
@@ -348,9 +349,9 @@ void FFT_Param::SetupFFTData(const double sample_dt){
 void FFT_Param::SetupDFTData(const double sample_dt){
   // note that sample_dt cannot be zero, otherwise this function cannot work
   if(Lt_sub<=sample_dt || Lt_sub<=1.e-10){
-    FatalErrorST("Fatal error, fft_param window length is too short < 1e-10 or less than dt");
+    FatalErrorST("fft_param window length is too short < 1e-10 or less than dt");
   }else if(sample_dt<=1.e-11){
-    FatalErrorST("Fatal error, global dt is < 1e-11");
+    FatalErrorST("global dt is < 1e-11");
   }
 
   if(dt_sub>sample_dt && fabs(dt_sub-sample_dt)>=1e-2*sample_dt){ // dt is specified as an input and not equal to the simulation dt
@@ -360,6 +361,7 @@ void FFT_Param::SetupDFTData(const double sample_dt){
     // second check if Lt_sub is an integer number of dt_sub
     Nt_sub=std::round(Lt_sub/dt_sub)+1; // this ensures we are not less than Lt_sub
     Lt_sub=(Nt_sub-1)*dt_sub; // at this point N_temp is integer and Lt_sub is adjusted
+    Nt=std::round(Lt/dt_sub)+1.0; // adjust the new Nt to reflect that dt_sub different than dt
   }else{ // dt is either unspecified or very close to the simulation dt
     dt_sub=sample_dt;  // let it be the dt_sim at the beginning
     // first check if Lt_sub is an integer number of sample_dt

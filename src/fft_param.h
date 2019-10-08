@@ -7,13 +7,18 @@
 #include"string_to_type.h"
 #include"fft.h"
 
+/*!
+ * \brief Parameter structs to prepare the driving parameters and parse input data
+ * \author Mohammad Alhawwary
+ */
 namespace fftspc{
 
+//! \brief The PSD_Param struct, Power spectral density parameters
 struct PSD_Param{
   int bin_aver_flag=0;
   double octave_n=1.;
   double p_ref=2e-5; //Pa
-  int mode=1;  //1:PSD only, 2:PSD/SPL/OASPL
+  int mode=1;  //!< 1:PSD only, 2:PSD/SPL/OASPL
   PSD_Type type_=DENSITY;
   double scaling_factor=1.;
 
@@ -38,26 +43,28 @@ struct PSD_Param{
   }
 };
 
+
+//! \brief The FFT_Param struct, for fft related parameters
 struct FFT_Param{
 
   bool DFT_mode=false;
 
-  uint Nt;             // no. of points for the whole simulation
-  uint Nt_sub;         // no. of points in each subset of Nt, for averaging
-  int  Navg=0;         // total number of averages
-  double dt_sub=0.;       // physical dt of the subset
-  double dt=0.;       // physical dt of the whole simulation time
-  double Lt=0.;           // width/period of the whole simulation time
-  double Lt_sub=0.;    // width/period of the subset time signal, or T_period
-  int Nt_shifted=0;    // the shift position
-  double shift=0.5;    // the shift distance between different subsets
-  int aver_count=-1;   // counter for the number of averages
-  bool aver_flag=false;// a flag for averaging
-  bool mean_substract=true; // a flag for substracting the mean
-  FFT_WINDOW_Type window_type=RECTANGULAR;   // default "Hann" windowing, no windowing is "NO"
-  AVGFFT_Mode_Type avgfft_mode=VARIANCE; // default: "variance" to preserve the variance and energy of the signal
-  std::vector<double> Wwind;   // array of the windowing values
-  double wind_scaling=1.;      // for windowing scaling in consistence with avgfft_mode
+  uint Nt;             //!< no. of points for the whole simulation
+  uint Nt_sub;         //!< no. of points in each subset of Nt, for averaging
+  int  Navg=0;         //!< total number of averages
+  double dt_sub=0.;    //!< physical dt of the subset
+  double dt=0.;        //!< physical dt of the whole simulation time
+  double Lt=0.;        //!< width/period of the whole simulation time
+  double Lt_sub=0.;    //!< width/period of the subset time signal, or T_period
+  int Nt_shifted=0;    //!< the shift position
+  double shift=0.5;    //!< the shift distance between different subsets
+  int aver_count=-1;   //!< counter for the number of averages
+  bool aver_flag=false;     //!< a flag for averaging
+  bool mean_substract=true; //!< a flag for substracting the mean
+  FFT_WINDOW_Type window_type=RECTANGULAR;   //!< default "Hann" windowing, no windowing is "NO"
+  AVGFFT_Mode_Type avgfft_mode=VARIANCE; //!< default: "variance" to preserve the variance and energy of the signal
+  std::vector<double> Wwind;   //!< array of the windowing values
+  double wind_scaling=1.;      //!< for windowing scaling in consistence with avgfft_mode
 
   virtual FFT_Param& operator =(const FFT_Param& Rdata_in);
   void SetupFFTData(const double sample_dt);
@@ -123,7 +130,7 @@ struct FFT_Param{
     double dt_temp=1.e-20;
     if(Nt_sub>0)
         dt_temp=Lt_sub/(Nt_sub-1);  // a default value
-    dt_sub=cmdline.follow(dt_temp,"-dt");
+    dt_sub=cmdline.follow(dt_temp,"-dt"); // if there is no input dt, use dt_temp
     if(Lt_sub<=1.e-10)
       Lt_sub=dt_sub*(Nt_sub-1);
     shift=cmdline.follow(0.,"-s"); //default no shifting or windowing
@@ -150,7 +157,7 @@ struct FFT_Param{
     double dt_temp=1.e-20;
     if(Nt_sub>0)
         dt_temp=Lt_sub/(Nt_sub-1);  // a default value
-    dt_sub=cmdline.follow(dt_temp,"-dt");
+    dt_sub=cmdline.follow(dt_temp,"-dt"); // if there is no input dt, use dt_temp
     if(Lt_sub<=1.e-10)
       Lt_sub=dt_sub*(Nt_sub-1);
     shift=cmdline.follow(0.5,"-s"); //default 50% overlap
@@ -170,6 +177,8 @@ struct FFT_Param{
   }
 };
 
+
+//! \brief The Wave struct, for testing using a sine or cousine wave
 struct Wave{
   const double PI=3.1415926535897932384626433832795029L;
 
@@ -197,16 +206,18 @@ struct Wave{
   void DumpWaveSignal(std::string fname_in,const std::vector<double> time_vec,std::vector<double> data_vec);
 };
 
+
+//! \brief The Case_Param struct, for general case parameters
 struct Case_Param{
   // Case parameters:
   //-----------------------------
-  std::string data_fname="NO_INPUT_FILE";    // parent folder for the case results
+  std::string data_fname="NO_INPUT_FILE";    //!< parent folder for the case results
   std::string output_data_name="NO_INPUT_FILE";
   std::string input_dir;
   std::string output_dir;
-  unsigned long int data_row=0;     // firt row in the file to extract data
-  unsigned long int data_lastrow=1e7; // last row in the file to extract data
-  unsigned int data_col=1;     // col in the file to extract data
+  unsigned long int data_row=0;     //!< firt row in the file to extract data
+  unsigned long int data_lastrow=1e7; //!< last row in the file to extract data
+  unsigned int data_col=1;     //!< col in the file to extract data
   unsigned int psd_flag=0;
   unsigned int spl_flag=0;
 

@@ -8,7 +8,7 @@ void FFT_Driver::Init(){
   if(case_param_.psd_flag)
     psd_param_=case_param_.psd_param;
 
-  if(case_param_.data_fname=="NO_INPUT_FILE"){
+  if(case_param_.data_fname=="NO_INPUT_FILE"){ // analytical wave testing
     std::cout<<"output_dir=" <<case_param_.output_dir<<std::endl;
     fft_param_.Nt=case_param_.wave_param.Nnodes-1;
     fft_param_.dt=case_param_.wave_param.dt;
@@ -20,14 +20,19 @@ void FFT_Driver::Init(){
     time_vec_.erase(time_vec_.end()-1);
     udata_vec_.erase(udata_vec_.end()-1);
 
-  }else{ // use input file data to setup the fft Lt,Nt,dt data
+  }else{ // use input data file to setup the fft Lt,Nt,dt data
     std::cout<<"input_dir ="<<case_param_.input_dir<<std::endl;
     std::cout<<"output_dir=" <<case_param_.output_dir<<std::endl;
     ReadTimeData(case_param_.data_fname);
     fft_param_.Nt=time_vec_.size();
     fft_param_.Lt=time_vec_[fft_param_.Nt-1]-time_vec_[0];
     fft_param_.dt=time_vec_[1]-time_vec_[0];
-    if(fft_param_.Nt_sub>0)
+    if(fft_param_.Lt_sub > fft_param_.Lt){
+      FatalError("Lt_sub > Lt");
+      std::cout<<"Adjusting the subset time length Lt_sub=Lt ..................."<<std::endl;
+      fft_param_.Lt_sub=fft_param_.Lt;
+    }
+    if(fft_param_.Nt_sub>0 && fft_param_.dt_sub<=1e-20)
       fft_param_.Lt_sub=fft_param_.dt*(fft_param_.Nt_sub-1);
   }
 
@@ -35,7 +40,7 @@ void FFT_Driver::Init(){
     fft_param_.SetupDFTData(fft_param_.dt);
     if(fft_param_.Nt_sub>10000){
       std::cout<<"WARNING: the number of data points for DFT exceeded 10000, this will take some time to compute";
-      std::cout<<"\n         please consider using an FFT algorithm instead, i.e., N=2^{k}, k is integer"<<std::endl;
+      std::cout<<"\n         please consider using an FFT algorithm instead, i.e., N=2^{k}, k is integer"<<std::endl<<"\n";
     }
   }else{
     fft_param_.SetupFFTData(fft_param_.dt);
@@ -57,14 +62,14 @@ void FFT_Driver::Init(){
   std::cout<<"FFT: N data in a window subset="<<fft_param_.Nt_sub<<std::endl;
   std::cout<<"FFT: N data shifted           ="<<fft_param_.Nt_shifted<<std::endl;
   std::cout<<"FFT: N of window subsets      ="<<fft_param_.Navg+1<<std::endl;
-  std::cout<<"FFT: L,     sample length ="<<fft_param_.Lt<<std::endl;
-  std::cout<<"FFT: L_sub, window length ="<<fft_param_.Lt_sub<<std::endl;
-  std::cout<<"FFT: dt,    in the sample ="<<fft_param_.dt<<std::endl;
-  std::cout<<"FFT: dt_sub, actually used="<<fft_param_.dt_sub<<std::endl;
-  std::cout<<"FFT: window function      =\""<<enum_to_string<FFT_WINDOW_Type>(fft_param_.window_type)<<"\""<<std::endl;
-  std::cout<<"FFT: window_scaling_factor="<<fft_param_.wind_scaling<<std::endl;
+//  std::cout<<"FFT: L,     sample length ="<<fft_param_.Lt<<std::endl;
+  std::cout<<"FFT: L_sub, window length     ="<<fft_param_.Lt_sub<<std::endl;
+//  std::cout<<"FFT: dt,    in the sample ="<<fft_param_.dt<<std::endl;
+  std::cout<<"FFT: dt_sub, actually used    ="<<fft_param_.dt_sub<<std::endl;
+  std::cout<<"FFT: window function  =\""<<enum_to_string<FFT_WINDOW_Type>(fft_param_.window_type)<<"\""<<std::endl;
+//  std::cout<<"FFT: window_scaling_factor="<<fft_param_.wind_scaling<<std::endl;
   if(case_param_.psd_flag>0)
-    std::cout<<"PSD: psd type = \""<<enum_to_string<PSD_Type>(psd_param_.type_)<<"\""<<std::endl;
+    std::cout<<"PSD: psd type         =\""<<enum_to_string<PSD_Type>(psd_param_.type_)<<"\""<<std::endl;
 
 
   //Setup the frequency vector
@@ -105,7 +110,7 @@ void FFT_Driver::ComputeFFTavg(){
   int local_fft_iter=fft_param_.dt_sub/fft_param_.dt;
 
   double u_mean = accumulate( udata_vec_.begin(), udata_vec_.end(), 0.0)/udata_vec_.size();
-  std::cout<<"data mean="<<u_mean<<std::endl;
+  std::cout<<"Data mean="<<u_mean<<std::endl;
 
   if(fft_param_.window_type!=RECTANGULAR && fft_param_.mean_substract) // if windowing substract the mean first
     SubstractMean(udata_vec_);
@@ -242,9 +247,11 @@ void FFT_Driver::ReadTimeData(const std::string in_fname){
   }
 
   std::cout<<std::setprecision(16);
-  std::cout<<"N data read="<<time_vec_.size()<<std::endl;
-  std::cout<<"dt="<<time_vec_[1]-time_vec_[0]<<std::endl;
-  std::cout<<"Fs="<<1./(time_vec_[1]-time_vec_[0])<<"\n\n";
+  std::cout<<"N  ="<<time_vec_.size()<<std::endl;
+  std::cout<<"Lt ="<<time_vec_.back()-time_vec_.front()<<"\t \t (sample length)"<<std::endl;
+  std::cout<<"dt ="<<time_vec_[1]-time_vec_[0]<<"\t (dt in the sample)"<<std::endl;
+  std::cout<<"\n";
+  //std::cout<<"Fs="<<1./(time_vec_[1]-time_vec_[0])<<"\n\n";
 
   return;
 }

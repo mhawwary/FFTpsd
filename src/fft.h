@@ -21,13 +21,18 @@ namespace  fftspc {
   const Complex I=Complex(0.,1.);
   const Complex I0=Complex(0.,0.);
 
-  /**
-   *\brief The FFT class
-   *\author Mohammad Alhawwary
-   *\date 01/12/2018
-   */
+
   template<typename T>
-  class FFT{  // FFT on complex data, outputs both positive&negative frequency data
+  /*!
+   * \brief Fast Fourier Transform (FFT) class
+   * It works with both real and complex data and contains static memebers for several windowing functions
+   * It is also optimized for repeated computations on the same data length.
+   * It has the restriction of number of points in the data to be of 2^{n}, n is an integer when in FFT mode.
+   * DFT mode is also available.
+   * \author Mohammad Alhawwary
+   * \date 01/12/2018
+   */
+  class FFT{
 
   protected:
     typedef std::complex<T> complex;
@@ -42,6 +47,7 @@ namespace  fftspc {
 
   public:
     //  Construction Functions :
+    //------------------------
     FFT(void){}
     FFT(const int n_data_size, const std::string in_mode){
       if(in_mode=="real"){
@@ -72,61 +78,192 @@ namespace  fftspc {
     }
 
     virtual ~FFT(void);
+
+    // User functions:
+    //------------------------
+    /*!
+     * \brief dft , computes the discrete Fourier transform of real data
+     * \param u_data input:real data
+     * \param u_fft  output:complex fft
+     */
     void dft(const vector u_data,cvector &u_fft);
+
     template<typename T1, typename T2>
-    void   fft(const T1 u_data,T2 &u_fft);  //in:real/complex data, out:complex fft
-    void  ifft(const cvector u_fft, cvector &u_data); //in:complex fft,  out:real data
-    void  rfft(const vector u_data, cvector &u_fft);  //in:real data,    out:complex fft
-    void irfft(const cvector u_fft, vector &u_data); //in:complex fft,  out:real data
-    void fftfreq(const int local_n, const T sample_spacing, vector &freq_); // freq positive and negative
+    /*!
+     * \brief fft , computes fast Fourier transform of both real and complex data
+     * \param u_data input:real/complex data
+     * \param u_fft  output:complex fft
+     */
+    void   fft(const T1 u_data,T2 &u_fft);
+
+    /*!
+     * \brief ifft , computes the inverse fast Fourier transform of complex and real data
+     * \param u_fft  input:complex fft
+     * \param u_data output:complex/real data
+     */
+    void  ifft(const cvector u_fft, cvector &u_data);
+
+    /*!
+     * \brief rfft , computes the fast Fourier transform of real data
+     * \param u_data input:real data
+     * \param u_fft  output:complex fft
+     */
+    void  rfft(const vector u_data, cvector &u_fft);
+
+    /*!
+     * \brief irfft , computes the inverse fast Fourier transform of real data
+     * \param u_fft  input:complex fft
+     * \param u_data output:real data
+     */
+    void irfft(const cvector u_fft, vector &u_data);
+
+    /*!
+     * \brief fftfreq , computes the positive and negative frequency arrays
+     * \param local_n , in: number of frequencies
+     * \param sample_spacing , in: dt of the sample
+     * \param freq_  , out: frequency array
+     */
+    void fftfreq(const int local_n, const T sample_spacing, vector &freq_);
+
+    /*!
+     * \brief fftintfreq , computes the positive and negative integer frequencies or integer wavenumbers
+     * \param local_n    , in: number of frequencies
+     * \param freq_      , out: frequency array
+     */
     void fftintfreq(const int local_n, ivector &freq_); // for integer frequencies
-    void rfftfreq(const int local_n, const T sample_spacing, vector &freq_); // positive freq
-    void rfftintfreq(const int local_n, ivector &freq_); // for positive integer freq
+
+    /*!
+     * \brief rfftfreq  , computes the positive frequency array
+     * \param local_n   , in: number of frequencies
+     * \param sample_spacing , in: dt of the sample
+     * \param freq_     , out: frequency array
+     */
+    void rfftfreq(const int local_n, const T sample_spacing, vector &freq_);
+
+    /*!
+     * \brief rfftintfreq , computes the positive integer frequencies or integer wavenumbers
+     * \param local_n    , in: number of frequencies
+     * \param freq_      , out: frequency array
+     */
+    void rfftintfreq(const int local_n, ivector &freq_);
+
+
     template<typename TT>
+    //! \brief fftshift , for shifting the negative frequencies following python numpy's shift
     void fftshift(TT &u_fft);
 
+    /*!
+     * \brief Hanning window function
+     * \param n_size_in        , in: size of the windowed array
+     * \param in_wind_mode     , in: either SYMMETRIC (for filtering) or PERIODIC (for PSD and FFT)
+     * \param in_scaling_mode  , in: the mode used to compute the scaling, either VARIANCE or PEAK
+     * \param Wwind            , out: the output data array of windowing values
+     * \param scaling_factor   , out: the scaling factor to preserve either the peak or the variance/energy
+     * \ref 1-W.H. Press, B.P. Flannery, S.A. Teukolsky, and W.T. Vetterling, “Numerical Recipes”, 2-Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
+     */
     static void Hanning(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                         ,vector& Wwind,T& scaling_factor);
+
+    /*!
+     * \brief Hamming window function
+     * \ref Blackman, R.B. and Tukey, J.W., (1958) The measurement of power spectra, Dover Publications, New York.
+     */
     static void Hamming(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                         ,vector& Wwind,T& scaling_factor);
+
+    /*!
+     * \brief Blackman window function
+     * \ref  1-Blackman, R.B. and Tukey, J.W., (1958) The measurement of power spectra, Dover Publications, New York., 2-Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
+     */
     static void Blackman(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                          ,vector& Wwind,T& scaling_factor);
+
+    /*!
+     * \brief Triangular window function
+     * \ref   1-Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471,2-MATLAB, 3-WIKIPEDIA
+     */
     static void Triangular(const int n_size_in,const int L,const AVGFFT_Mode_Type in_scaling_mode
                            ,vector& Wwind,T& scaling_factor);
+
+    /*!
+     * \brief Bartlett window function
+     * \ref   1-Bartlett, from--> W.H. Press, B.P. Flannery, S.A. Teukolsky, and W.T. Vetterling, “Numerical Recipes”, 2-Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
+     */
     static void Bartlett(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                          ,vector& Wwind,T& scaling_factor);
+
+    /*!
+     * \brief Welch window function
+     * \ref W.H. Press, B.P. Flannery, S.A. Teukolsky, and W.T. Vetterling, “Numerical Recipes”
+     */
     static void Welch(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                       ,vector& Wwind,T& scaling_factor);
 
+    /*!
+     * \brief GetWindowScalingFactor , a simple utility to get the window scaling factor
+     * \param window_type_in         , in: the window function type
+     * \param psd_type_in            , in: the spectrum type ( POWER / DENSITY )
+     * \return the window scaling factor
+     */
     static T GetWindowScalingFactor(FFT_WINDOW_Type window_type_in,PSD_Type psd_type_in);
 
   protected:
     void Init(const int n_data_size);
     void Init_real(const int n_data_size);
     void Init_dft(const int n_data_size);
+
     template<typename TT>
-    void bit_reverse(TT &u_data, const int in_data_size); // bit reverse of 1D array
+    //! \brief bit_reverse of 1D arrays
+    void bit_reverse(TT &u_data, const int in_data_size);
+
+    /*!
+     * \brief fft_inplace
+     * \param u_fft
+     * \param local_n
+     * \param local_n_levels
+     */
     void fft_inplace(cvector &u_fft, const int local_n, const int local_n_levels);
+
+    /*!
+     * \brief ifft_inplace
+     * \param u_fft
+     * \param local_n
+     * \param local_n_levels
+     */
     void ifft_inplace(cvector &u_fft, const int local_n, const int local_n_levels);
+
+    /*!
+     * \brief packing_oddeven_real2complexdata
+     * \param u_data
+     * \param h_packed
+     * \param n_packed
+     */
     void packing_oddeven_real2complexdata(const vector u_data, cvector& h_packed, const int n_packed);
+
+    /*!
+     * \brief folding_realimag_complex2realdata
+     * \param h_data
+     * \param u_data
+     * \param n_packed
+     */
     void folding_realimag_complex2realdata(const cvector h_data, vector& u_data, const int n_packed);
 
   protected:
-    bool real_mode=false;  // if true then we only compute the positive frequency part for a real input
-    bool dft_mode=false;  // use DFT instead of FFT
-    cmatrix W_arr;
-    cmatrix Wi_arr;
-    cvector Wd_arr,Wdi_arr;
-    ivector m_arr;
-    ivector m_2_arr;
-    int n_data;          // n
-    int n_data_levels;   // log2(n)
+    bool real_mode=false;   //!< if true then we only compute the positive frequency part for a real input
+    bool dft_mode=false;    //!< if true computes DFT instead of FFT
+    cmatrix W_arr;          //!<
+    cmatrix Wi_arr;         //!<
+    cvector Wd_arr,Wdi_arr; //!<
+    ivector m_arr;          //!<
+    ivector m_2_arr;        //!<
+    int n_data;             //!< n
+    int n_data_levels;      //!< log2(n)
 
     // for real fft:
-    int n_2_data;        // n/2
-    int n_4_data;        // n/4
-    int n_2_data_levels; // log2(n/2)
-    cvector Wn,Wn2;
+    int n_2_data;           //!< n/2
+    int n_4_data;           //!< n/4
+    int n_2_data_levels;    //!< log2(n/2)
+    cvector Wn,Wn2;         //!<
 
   };
 
@@ -134,8 +271,6 @@ namespace  fftspc {
   template<typename T>
   void FFT<T>::Hanning(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                        ,vector& Wwind,T& scaling_factor){
-    //W.H. Press, B.P. Flannery, S.A. Teukolsky, and W.T. Vetterling, “Numerical Recipes”
-    //Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
     const T PI=3.1415926535897932384626433832795029L;
     int n_window;
     Wwind.resize(n_size_in);
@@ -166,7 +301,6 @@ namespace  fftspc {
   template<typename T>
   void FFT<T>::Hamming(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                        ,vector& Wwind,T& scaling_factor){
-    //Blackman, R.B. and Tukey, J.W., (1958) The measurement of power spectra, Dover Publications, New York.
     const T PI=3.1415926535897932384626433832795029L;
     int n_window;
     Wwind.resize(n_size_in);
@@ -197,8 +331,6 @@ namespace  fftspc {
   template<typename T>
   void FFT<T>::Blackman(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                         ,vector& Wwind,T& scaling_factor){
-    //Blackman, R.B. and Tukey, J.W., (1958) The measurement of power spectra, Dover Publications, New York.
-    //Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
     const T PI=3.1415926535897932384626433832795029L;
     int n_window;
     Wwind.resize(n_size_in);
@@ -229,9 +361,6 @@ namespace  fftspc {
   template<typename T>
   void FFT<T>::Triangular(const int n_size_in, const int L,const AVGFFT_Mode_Type in_scaling_mode
                           ,vector& Wwind,T& scaling_factor){
-    //Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
-    // MATLAB and WIKIPEDIA
-
     if(L==n_size_in){ //MATLAB version
       if(L%2==1){ // odd
         Wwind.resize(n_size_in);
@@ -271,8 +400,6 @@ namespace  fftspc {
   template<typename T>
   void FFT<T>::Bartlett(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                         ,vector& Wwind,T& scaling_factor){
-    // or Bartlett, from--> W.H. Press, B.P. Flannery, S.A. Teukolsky, and W.T. Vetterling, “Numerical Recipes”
-    // Oppenheim, Alan V., Ronald W. Schafer, and John R. Buck. Discrete-Time Signal Processing. Upper Saddle River, NJ: Prentice Hall, 1999, pp. 468–471
     int n_window;
     Wwind.resize(n_size_in);
 
@@ -305,7 +432,6 @@ namespace  fftspc {
   template<typename T>
   void FFT<T>::Welch(const int n_size_in,const std::string in_wind_mode,const AVGFFT_Mode_Type in_scaling_mode
                      ,vector& Wwind,T& scaling_factor){
-    // W.H. Press, B.P. Flannery, S.A. Teukolsky, and W.T. Vetterling, “Numerical Recipes”
     int n_window;
     Wwind.resize(n_size_in);
 
