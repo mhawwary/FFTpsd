@@ -120,8 +120,8 @@ void FFT_Driver::ComputeFFTavg(){
       int global_iter=local_fft_iter*itt+i_avg*fft_param_.Nt_shifted;
       u_sub[itt]=udata_vec_[global_iter]*fft_param_.Wwind[itt];
     }
-//    if(fft_param_.window_type!=RECTANGULAR && fft_param_.mean_substract) // if windowing substract the mean first
-//      SubstractMean(u_sub);
+    if(fft_param_.window_type!=RECTANGULAR && fft_param_.window_mean_substract) // if windowing substract the mean first
+      SubstractMean(u_sub);
 
     if(fft_param_.DFT_mode)
       fft_->dft(u_sub,fft_vec_);

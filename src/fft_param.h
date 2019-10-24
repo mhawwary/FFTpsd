@@ -60,7 +60,8 @@ struct FFT_Param{
   double shift=0.5;    //!< the shift distance between different subsets
   int aver_count=-1;   //!< counter for the number of averages
   bool aver_flag=false;     //!< a flag for averaging
-  bool mean_substract=true; //!< a flag for substracting the mean
+  bool mean_substract=true; //!< a flag for substracting the mean of the whole sample
+  bool window_mean_substract=false; //!< a flag for substracting the mean of each window
   FFT_WINDOW_Type window_type=RECTANGULAR;   //!< default "Hann" windowing, no windowing is "NO"
   AVGFFT_Mode_Type avgfft_mode=VARIANCE; //!< default: "variance" to preserve the variance and energy of the signal
   std::vector<double> Wwind;   //!< array of the windowing values
@@ -83,13 +84,7 @@ struct FFT_Param{
     shift=input("fft/shift",0.,false); //default no shifting or windowing
     window_type=string_to_enum<FFT_WINDOW_Type>(input("fft/window","RECTANGULAR",false));
     avgfft_mode=string_to_enum<AVGFFT_Mode_Type>(input("fft/magnitude_scaling_mode","peak",false));
-    int mean_subs_flag;
-    mean_subs_flag=input("fft/mean_substract",1,false); // default is mean substract
-    if(mean_subs_flag==1)
-      mean_substract=true;
-    else
-      mean_substract=false;
-
+    mean_substract=input("fft/mean_substract",1,false)==1?true:false; // default is mean substract
     if(input("fft/dft_mode",0,false)==1)
       DFT_mode=true;
 
@@ -111,12 +106,11 @@ struct FFT_Param{
     shift=input("fft/shift",0.5,false); //default 0.5 shifting
     window_type=string_to_enum<FFT_WINDOW_Type>(input("fft/window","HANN",false));
     avgfft_mode=VARIANCE; // force to this value for psd and spl computation
-    int mean_subs_flag;
-    mean_subs_flag=input("fft/mean_substract",1,false); // default is mean substract
-    if(mean_subs_flag==1)
+    window_mean_substract=input("fft/window_mean_substract",0,false)==1?true:false;
+    if(window_mean_substract)
       mean_substract=true;
     else
-      mean_substract=false;
+      mean_substract=input("fft/mean_substract",1,false)==1?true:false; // default is mean substract
 
     if(input("fft/dft_mode",0,false)==1)
       DFT_mode=true;
@@ -138,12 +132,7 @@ struct FFT_Param{
     avgfft_mode=PEAK; // default for fft averaging
     if(cmdline.search("-variance"))
       avgfft_mode=VARIANCE;
-
-    int mean_subs_flag=cmdline.follow(1,"-m"); // default is mean substract
-    if(mean_subs_flag==1)
-      mean_substract=true;
-    else
-      mean_substract=false;
+    mean_substract=cmdline.follow(1,"-m")==1?true:false; // default is mean substract
 
     if(cmdline.search("-dft"))
       DFT_mode=true;
@@ -163,12 +152,11 @@ struct FFT_Param{
     shift=cmdline.follow(0.5,"-s"); //default 50% overlap
     window_type=string_to_enum<FFT_WINDOW_Type>(cmdline.follow("HANN","-w"));
     avgfft_mode=VARIANCE; // force to this value for psd and spl computation
-
-    int mean_subs_flag=cmdline.follow(1,"-m"); // default is mean substract
-    if(mean_subs_flag==1)
+    window_mean_substract=cmdline.follow(0,"-mw")==1?true:false;
+    if(window_mean_substract)
       mean_substract=true;
     else
-      mean_substract=false;
+      mean_substract=cmdline.follow(1,"-m")==1?true:false; // default is mean substract
 
     if(cmdline.search("-dft"))
       DFT_mode=true;
