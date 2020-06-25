@@ -3,9 +3,8 @@ A C++ toolbox for computing Discrete and Fast Fourier Transforms (DFT,FFT), Powe
 Example for usage:
 ----------------------
 
-If you have an input file with column formats:
-
-      time   signal_1     signal_2     signal_3 
+If you have an input file with column formats:\
+       time   signal_1     signal_2     signal_3 
       
 line1  0.0     0.0          1.0         -0.3     
 
