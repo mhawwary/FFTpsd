@@ -2,11 +2,13 @@ A C++ toolbox for computing Discrete and Fast Fourier Transforms (DFT,FFT), Powe
 
 Example for usage:
 ----------------------
+
+\n
 If you have an input file with column formats:
-      time   signal_1     signal_2     signal_3
-line1  0.0     0.0          1.0         -0.3
-line2  0.1     2.5          2.0          0.7
-....   ...     ...          ...          ...
+      time   signal_1     signal_2     signal_3 \n
+line1  0.0     0.0          1.0         -0.3     \n
+line2  0.1     2.5          2.0          0.7    \n
+....   ...     ...          ...          ...  \n
 
 **Linux
 Inside the cloned directory $ mkdir obj , $ mkdir bin, before compile
