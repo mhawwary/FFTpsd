@@ -6,7 +6,7 @@ Example for usage:
 If you have an input file with column formats:\
        time   signal_1     signal_2     signal_3 
       
-line1  0.0     0.0          1.0         -0.3     
+line1  0.0_____ 0.0          1.0         -0.3     
 
 line2  0.1     2.5          2.0          0.7   
 
