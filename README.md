@@ -18,7 +18,7 @@ Linux
 Inside the cloned directory $ mkdir obj , $ mkdir bin, before compile.
 1-compile the code by running $ make , inside the code directory after cloning. 
 2-run the code as follows:
-$ ./bin/fftpsd -i inputfile.dat -n 2048 
+$ ./bin/fftpsd -i datafile.dat -n 2048 
 for fft only.
 or
 $ ./bin/fftpsd -i datafile.dat -n 2048 -spl 
