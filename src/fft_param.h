@@ -124,12 +124,6 @@ struct FFT_Param{
     dt_sub=cmdline.follow(-1.e-20,"-dt");
 
     if(Nt_sub>0){ 
-      if (!cmdline.search("-dt")){
-        if (cmdline.search("-l"))
-          dt_sub = Lt_sub/Nt_sub;
-        else
-          FatalErrorST("time step must be specified, pls use -dt [time-step]");
-      }
       Lt_sub=dt_sub*Nt_sub; 
     }else if (!cmdline.search("-l")){
       FatalErrorST("period/window time length must be specified, pls use -l [time-length]");
@@ -153,12 +147,6 @@ struct FFT_Param{
     Lt_sub=cmdline.follow(-1.e-20,"-l");
     dt_sub=cmdline.follow(-1.e-20,"-dt");
     if(Nt_sub>0){ 
-      if (!cmdline.search("-dt")){
-        if (cmdline.search("-l"))
-          dt_sub = Lt_sub/Nt_sub;
-        else
-          FatalErrorST("time step must be specified, pls use -dt [time-step]");
-      }
       Lt_sub=dt_sub*Nt_sub; 
     }else if (!cmdline.search("-l")){
       FatalErrorST("period/window time length must be specified, pls use -l [time-length]");

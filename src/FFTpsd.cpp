@@ -71,12 +71,12 @@ void help_detailed(){
   std::cout<<"       minimum arguments for fft computations"<<std::endl;
   std::cout<<"       --------------------------------------"<<std::endl;
   std::cout<<"           [-i datafile] "<<std::endl;
-  std::cout<<"           [-l time length] "<<std::endl;
+  std::cout<<"           [-n N] "<<std::endl;
 
   std::cout<<"\n       minimum arguments for psd, power & spl computations"<<std::endl;
   std::cout<<"       -----------------------------------------------------"<<std::endl;
   std::cout<<"           [-i datafile]"<<std::endl;
-  std::cout<<"           [-l time length] "<<std::endl;
+  std::cout<<"           [-n N] "<<std::endl;
   std::cout<<"           [-psd] or [-pow] or [-spl]"<<std::endl;
 
   std::cout<<"\n       If DFT is preferred just add to your arguments the flag [-dft]"<<std::endl;
@@ -116,12 +116,12 @@ void help_short(){
   std::cout<<"       minimum arguments for fft computations"<<std::endl;
   std::cout<<"       --------------------------------------"<<std::endl;
   std::cout<<"           [-i data file] "<<std::endl;
-  std::cout<<"           [-l time length] "<<std::endl;
+  std::cout<<"           [-n N] "<<std::endl;
 
   std::cout<<"\n       minimum arguments for psd, power & spl computations"<<std::endl;
   std::cout<<"       -----------------------------------------------------"<<std::endl;
   std::cout<<"           [-i data file]"<<std::endl;
-  std::cout<<"           [-l time lengthh] "<<std::endl;
+  std::cout<<"           [-n N] "<<std::endl;
   std::cout<<"           [-psd] or [-pow] or [-spl]"<<std::endl;
 
   std::cout<<"\n       If DFT is preferred just add to your arguments the flag [-dft]"<<std::endl;

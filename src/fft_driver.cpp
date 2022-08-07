@@ -33,7 +33,7 @@ void FFT_Driver::Init(){
       fft_param_.Lt_sub=fft_param_.Lt;
     }
     if(fft_param_.Nt_sub>0 && fft_param_.dt_sub<=1e-20)
-      fft_param_.Lt_sub=fft_param_.dt*(fft_param_.Nt_sub-1);
+      fft_param_.Lt_sub=fft_param_.dt*fft_param_.Nt_sub;
   }
 
   if(fft_param_.DFT_mode){
