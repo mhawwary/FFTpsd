@@ -71,17 +71,17 @@ void help_detailed(){
   std::cout<<"       minimum arguments for fft computations"<<std::endl;
   std::cout<<"       --------------------------------------"<<std::endl;
   std::cout<<"           [-i datafile] "<<std::endl;
-  std::cout<<"           [-n N] "<<std::endl;
+  std::cout<<"           [-l time length] "<<std::endl;
 
   std::cout<<"\n       minimum arguments for psd, power & spl computations"<<std::endl;
   std::cout<<"       -----------------------------------------------------"<<std::endl;
   std::cout<<"           [-i datafile]"<<std::endl;
-  std::cout<<"           [-n N] "<<std::endl;
+  std::cout<<"           [-l time length] "<<std::endl;
   std::cout<<"           [-psd] or [-pow] or [-spl]"<<std::endl;
 
   std::cout<<"\n       If DFT is preferred just add to your arguments the flag [-dft]"<<std::endl;
 
-  std::cout<<"\nDetailed option list and discription"<<std::endl;
+  std::cout<<"\nDetailed option list for more control over how the spectral analysis is performed"<<std::endl;
   std::cout<<"---------------------------------------"<<std::endl;
   std::cout<<"  [-i datafile]  name of the data file with its address"<<std::endl;
   std::cout<<"  [-o directory] output directory, default is the same as input"<<std::endl;
@@ -89,23 +89,23 @@ void help_detailed(){
   std::cout<<"  [-r first_row]  of the signal data in the data file, default 1"<<std::endl;
   std::cout<<"  [-q last_row ]  of the signal data in the data file, default is the end of the file"<<std::endl;
   std::cout<<"  [-c column] of the signal data in the data file, default 2, assuming time is at the first column"<<std::endl;
-  std::cout<<"\n  [-n N] number of data in one window subset, or in the whole sample if no shifting/averaging, must be 2^{k}, k is an integer"<<std::endl;
-  std::cout<<"  [-l Lt_sub] window length in sec or the whole sample length if no shifting/averaging"<<std::endl;
+  std::cout<<"\n  [-n N] number of data in one window subset, or in the whole sample if no shifting/averaging."<<std::endl;
+  std::cout<<"         If using fft it must be 2^{k}, k is an integer"<<std::endl;
+  std::cout<<"  [-l time length] window subset length in sec or the whole sample length if no shifting/averaging"<<std::endl;
   std::cout<<"  [-s shift] a value in [0.,1.] to indicate the ratio of data to be shifted"<<std::endl;
-  std::cout<<"             shift defaults: 0.5 for psd/pow/spl, 0. for fft"<<std::endl;
+  std::cout<<"             shift defaults: 0.5 for psd/pow/spl, 0. for fft/dft"<<std::endl;
   std::cout<<"  [-dt time_step] of the window subset or the whole sample in sec"<<std::endl;
-  std::cout<<"  [-w window] name of the window functions, for psd default is hann, for fft default is rectangular"<<std::endl;
+  std::cout<<"  [-w window] name of the window functions, for psd default is hann, for fft/dft default is rectangular"<<std::endl;
   std::cout<<"              windows: hann,hamm,bartlett,welch,blackman,triangular,rectangular"<<std::endl;
   std::cout<<"  [-m number] either 1 or 0 for mean substract, default is 1 to substract the mean"<<std::endl;
   std::cout<<"\n  [-psd filename]      compute the power spectral density (psd), filename is optional"<<std::endl;
   std::cout<<"  [-pow filename]      compute the power spectrum, filename is optional"<<std::endl;
   std::cout<<"  [-spl filename]      compute the sound pressure level (SPL), filename is optional"<<std::endl;
-  std::cout<<"  [-peak]     peak preserving averaging fft mode, useful for ensemble averaging with shift=1."<<std::endl;
-  std::cout<<"  [-variance] variance preserving averaging fft mode for conserving the signal energy, by default it is forced for psd, power and spl computations"<<std::endl;
+  std::cout<<"  [-peak]     peak preserving averaging psd mode, useful for ensemble averaging with shift=1."<<std::endl;
+  std::cout<<"  [-variance] variance preserving averaging psd mode for conserving the signal energy, by default it is forced for psd, power and spl computations"<<std::endl;
   std::cout<<"  [-pref pressure] reference pressure for SPL computation, default is 2e-5 Pa"<<std::endl;
-  std::cout<<"  [-bin] bin-averaging for psd and spl"<<std::endl;
-  std::cout<<"  [-oct number] the number nth octave averaging that is required, default is 1"<<std::endl;
-
+  // std::cout<<"  [-bin] bin-averaging for psd and spl"<<std::endl;
+  // std::cout<<"  [-oct number] the number nth octave averaging that is required, default is 1"<<std::endl;
   //std::cout<<"\nAlternatively, you can just parse an input parsing file as follows: fftpsd inputfile\n";
   exit(0);
 }
@@ -115,13 +115,13 @@ void help_short(){
   std::cout<<"-------------------------------"<<std::endl;
   std::cout<<"       minimum arguments for fft computations"<<std::endl;
   std::cout<<"       --------------------------------------"<<std::endl;
-  std::cout<<"           [-i datafile] "<<std::endl;
-  std::cout<<"           [-n N] "<<std::endl;
+  std::cout<<"           [-i data file] "<<std::endl;
+  std::cout<<"           [-l time length] "<<std::endl;
 
   std::cout<<"\n       minimum arguments for psd, power & spl computations"<<std::endl;
   std::cout<<"       -----------------------------------------------------"<<std::endl;
-  std::cout<<"           [-i datafile]"<<std::endl;
-  std::cout<<"           [-n N] "<<std::endl;
+  std::cout<<"           [-i data file]"<<std::endl;
+  std::cout<<"           [-l time lengthh] "<<std::endl;
   std::cout<<"           [-psd] or [-pow] or [-spl]"<<std::endl;
 
   std::cout<<"\n       If DFT is preferred just add to your arguments the flag [-dft]"<<std::endl;
