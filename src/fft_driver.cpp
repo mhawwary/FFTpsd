@@ -28,8 +28,8 @@ void FFT_Driver::Init(){
     fft_param_.Lt=time_vec_[fft_param_.Nt-1]-time_vec_[0];
     fft_param_.dt=time_vec_[1]-time_vec_[0];
     if(fft_param_.Lt_sub > fft_param_.Lt){
-      FatalError("Lt_sub > Lt");
-      std::cout<<"Adjusting the subset time length Lt_sub=Lt ..................."<<std::endl;
+      std::cout<<"WARNING: period/window subset length is greater than the whole sample length, Lt_sub > Lt" << std::endl;
+      std::cout<<"         Adjusting the subset time length Lt_sub = Lt ...................\n"<<std::endl;
       fft_param_.Lt_sub=fft_param_.Lt;
     }
     if(fft_param_.Nt_sub>0 && fft_param_.dt_sub<=1e-20)
@@ -47,7 +47,8 @@ void FFT_Driver::Init(){
   }
 
   if(fft_param_.Nt_sub>(case_param_.data_lastrow-case_param_.data_row)){
-    std::string str_message="The input data range (r:q,c) is less than the required N="
+    int ii = case_param_.data_lastrow-case_param_.data_row + 1;
+    std::string str_message="The input data size "+std::to_string(ii)+" is less than the required N="
                              +std::to_string(fft_param_.Nt_sub)+" number of data points ";
     FatalErrorST(str_message.c_str());
   }
@@ -63,7 +64,7 @@ void FFT_Driver::Init(){
   std::cout<<"FFT: N data shifted           ="<<fft_param_.Nt_shifted<<std::endl;
   std::cout<<"FFT: N of window subsets      ="<<fft_param_.Navg+1<<std::endl;
 //  std::cout<<"FFT: L,     sample length ="<<fft_param_.Lt<<std::endl;
-  std::cout<<"FFT: L_sub, window length     ="<<fft_param_.Lt_sub<<std::endl;
+  std::cout<<"FFT: Lt_sub, window length    ="<<fft_param_.Lt_sub<<std::endl;
 //  std::cout<<"FFT: dt,    in the sample ="<<fft_param_.dt<<std::endl;
   std::cout<<"FFT: dt_sub, actually used    ="<<fft_param_.dt_sub<<std::endl;
   std::cout<<"FFT: window function  =\""<<enum_to_string<FFT_WINDOW_Type>(fft_param_.window_type)<<"\""<<std::endl;
@@ -245,6 +246,8 @@ void FFT_Driver::ReadTimeData(const std::string in_fname){
     }
     i++;
   }
+
+  case_param_.data_lastrow = i-1;
 
   std::cout<<std::setprecision(16);
   std::cout<<"N  ="<<time_vec_.size()<<std::endl;

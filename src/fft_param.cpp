@@ -236,73 +236,44 @@ FFT_Param& FFT_Param::operator =(const FFT_Param& Rdata_in){
 void FFT_Param::SetupFFTData(const double sample_dt){
   // note that sample_dt cannot be zero, otherwise this function cannot work
   if(Lt_sub<=sample_dt || Lt_sub<=1.e-10){
-    FatalErrorST("fft_param window length is too short < 1e-10 or less than dt");
+    FatalErrorST("period/window length is too short < 1e-10 or less than dt");
   }else if(sample_dt<=1.e-11){
     FatalErrorST("global dt is < 1e-11");
   }
 
-  if(dt_sub>sample_dt && fabs(dt_sub-sample_dt)>=1e-2*sample_dt){ // dt is specified as an input and not equal to the simulation dt
-    // first check if dt_sub is an integer multiple of sample_dt
+  //first: adjust dt_sub
+  if (dt_sub<sample_dt)
+    dt_sub = sample_dt;
+  else{
+  // check if dt_sub is an integer multiple of sample_dt
     int temp_int=std::round(dt_sub/sample_dt);
     dt_sub = temp_int*sample_dt;
-    // second check if Lt_sub is an integer number of dt_sub
-    int N_temp=std::round(Lt_sub/dt_sub)+1; // this ensures we are not less than Lt_sub
-    Lt_sub=(N_temp-1)*dt_sub; // at this point N_temp is integer and Lt_sub is adjusted
-
-    // determine the nearest power of 2 using the adjusted dt_sub and window length
-    int exponent=std::log2(N_temp);
-    double diff0 = abs(N_temp-std::pow(2,exponent));
-    if(diff0!=0){ // N_temp is not a power of two
-      double diff1=abs(N_temp-std::pow(2,exponent+1));
-      if(diff0<diff1)
-        N_temp=std::pow(2,exponent);
-      else
-        N_temp=std::pow(2,exponent+1);
-    }
-    Nt_sub=N_temp;
-    Lt_sub=(Nt_sub-1)*dt_sub;
-    Nt=std::round(Lt/dt_sub)+1.0; // adjust the new Nt to reflect that dt_sub different than dt
-
-  }else{ // dt is either unspecified or very close to the simulation dt
-    dt_sub=sample_dt;  // let it be the dt_sim at the beginning
-    // first check if Lt_sub is an integer number of sample_dt
-    int N_temp=std::round(Lt_sub/sample_dt)+1; // this ensures we are not less than Lt_sub
-    Lt_sub=(N_temp-1)*sample_dt; // adjust to the new Lt_sub
-
-    if(Nt_sub>=2) // making sure it is a valid specified input
-      N_temp=Nt_sub;
-    // determine the nearest power of 2 using the simulation dt and the specified window length
-    int exponent=std::log2(N_temp);
-    double diff0 = abs(N_temp-std::pow(2,exponent));
-    if(diff0!=0){ // N_temp is not a power of two
-      double diff1=abs(N_temp-std::pow(2,exponent+1));
-      if(diff0<diff1)
-        N_temp=std::pow(2,exponent);
-      else
-        N_temp=std::pow(2,exponent+1);
-    }
-    double Lt0=(N_temp-1)*sample_dt;
-    int ratio=std::round(Lt_sub/Lt0);
-    if(ratio%2==0){
-      Lt_sub=ratio*Lt0;
-      if(ratio>=1)
-        dt_sub=Lt_sub/(N_temp-1);
-      else
-        dt_sub=sample_dt;
-      Nt_sub=N_temp;
-      Lt_sub=(Nt_sub-1)*dt_sub;
-    }else{ // they are not a power of two apart
-      if(ratio<=1){
-        Lt_sub=Lt0;
-        Nt_sub=N_temp;
-        dt_sub=Lt0/(N_temp-1);
-      }else{
-        Lt_sub=2*Lt0;
-        dt_sub=Lt_sub/(N_temp-1); // this settings keeps the dt the same as in Lt0
-        Nt_sub=N_temp;
-      }
-    }
   }
+  
+  // second: make sure Lt_sub is an integer number of dt_sub
+  if (Nt_sub<2)
+    Nt_sub = Lt_sub/dt_sub; // this ensures we are not less than Lt_sub
+  else{
+    Lt_sub=Nt_sub*dt_sub; // at this point Nt_sub is integer and Lt_sub is adjusted
+    if (Lt_sub > Lt)
+      Lt_sub = Lt;
+      Nt_sub = Lt_sub/dt_sub;
+  }
+
+  // third: adjust Nt_sub to the nearest power of 2
+  int exponent=std::log2(Nt_sub);
+  int Nt_sub0 = std::pow(2,exponent);
+  int Nt_sub1 = std::pow(2,exponent+1);
+  double Lt0 =  Nt_sub0*dt_sub;
+  double Lt1 =  Nt_sub1*dt_sub;
+  double diff0 = Lt_sub - Lt0;
+  double diff1 = Lt_sub - Lt1;
+
+  if (Lt1 > Lt)
+    Nt_sub = Nt_sub0;
+  else if (diff0 != 0)
+    Nt_sub = (diff0 < diff1)? Nt_sub0 : Nt_sub1;  
+  Lt_sub = Nt_sub*dt_sub;
 
   if(shift>5.e-2){ // anything less than 5% is no averaging or overlapping
     aver_count=0;
@@ -354,19 +325,23 @@ void FFT_Param::SetupDFTData(const double sample_dt){
     FatalErrorST("global dt is < 1e-11");
   }
 
-  if(dt_sub>sample_dt && fabs(dt_sub-sample_dt)>=1e-2*sample_dt){ // dt is specified as an input and not equal to the simulation dt
-    // first check if dt_sub is an integer multiple of sample_dt
+  //first: adjust dt_sub
+  if (dt_sub<sample_dt)
+    dt_sub = sample_dt;
+  else{
+  // check if dt_sub is an integer multiple of sample_dt
     int temp_int=std::round(dt_sub/sample_dt);
     dt_sub = temp_int*sample_dt;
-    // second check if Lt_sub is an integer number of dt_sub
-    Nt_sub=std::round(Lt_sub/dt_sub)+1; // this ensures we are not less than Lt_sub
-    Lt_sub=(Nt_sub-1)*dt_sub; // at this point N_temp is integer and Lt_sub is adjusted
-    Nt=std::round(Lt/dt_sub)+1.0; // adjust the new Nt to reflect that dt_sub different than dt
-  }else{ // dt is either unspecified or very close to the simulation dt
-    dt_sub=sample_dt;  // let it be the dt_sim at the beginning
-    // first check if Lt_sub is an integer number of sample_dt
-    Nt_sub=std::round(Lt_sub/dt_sub)+1; // this ensures we are not less than Lt_sub
-    Lt_sub=(Nt_sub-1)*dt_sub; // adjust to the new Lt_sub
+  }
+
+  // second: make sure Lt_sub is an integer number of dt_sub
+  if (Nt_sub<2){
+    Nt_sub = Lt_sub/dt_sub; // this ensures we are not less than Lt_sub
+  }else{
+    Lt_sub=Nt_sub*dt_sub; // at this point Nt_subis integer and Lt_sub is adjusted
+    if (Lt_sub > Lt)
+      Lt_sub = Lt;
+      Nt_sub = Lt_sub/dt_sub;
   }
 
   if(shift>5.e-2){ // anything less than 5% is no averaging or overlapping

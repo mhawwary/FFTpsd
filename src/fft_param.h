@@ -121,12 +121,20 @@ struct FFT_Param{
   void Parse(GetPot& cmdline){
     Nt_sub=cmdline.follow(0,"-n");
     Lt_sub=cmdline.follow(-1.e-20,"-l");
-    double dt_temp=1.e-20;
-    if(Nt_sub>0)
-        dt_temp=Lt_sub/(Nt_sub-1);  // a default value
-    dt_sub=cmdline.follow(dt_temp,"-dt"); // if there is no input dt, use dt_temp
-    if(Lt_sub<=1.e-10)
-      Lt_sub=dt_sub*(Nt_sub-1);
+    dt_sub=cmdline.follow(-1.e-20,"-dt");
+
+    if(Nt_sub>0){ 
+      if (!cmdline.search("-dt")){
+        if (cmdline.search("-l"))
+          dt_sub = Lt_sub/Nt_sub;
+        else
+          FatalErrorST("time step must be specified, pls use -dt [time-step]");
+      }
+      Lt_sub=dt_sub*Nt_sub; 
+    }else if (!cmdline.search("-l")){
+      FatalErrorST("period/window time length must be specified, pls use -l [time-length]");
+    }
+
     shift=cmdline.follow(0.,"-s"); //default no shifting or windowing
     window_type=string_to_enum<FFT_WINDOW_Type>(cmdline.follow("RECTANGULAR","-w"));
     avgfft_mode=PEAK; // default for fft averaging
@@ -143,12 +151,19 @@ struct FFT_Param{
   void Parse_psd_defaults(GetPot& cmdline){
     Nt_sub=cmdline.follow(0,"-n");
     Lt_sub=cmdline.follow(-1.e-20,"-l");
-    double dt_temp=1.e-20;
-    if(Nt_sub>0)
-        dt_temp=Lt_sub/(Nt_sub-1);  // a default value
-    dt_sub=cmdline.follow(dt_temp,"-dt"); // if there is no input dt, use dt_temp
-    if(Lt_sub<=1.e-10)
-      Lt_sub=dt_sub*(Nt_sub-1);
+    dt_sub=cmdline.follow(-1.e-20,"-dt");
+    if(Nt_sub>0){ 
+      if (!cmdline.search("-dt")){
+        if (cmdline.search("-l"))
+          dt_sub = Lt_sub/Nt_sub;
+        else
+          FatalErrorST("time step must be specified, pls use -dt [time-step]");
+      }
+      Lt_sub=dt_sub*Nt_sub; 
+    }else if (!cmdline.search("-l")){
+      FatalErrorST("period/window time length must be specified, pls use -l [time-length]");
+    }
+
     shift=cmdline.follow(0.5,"-s"); //default 50% overlap
     window_type=string_to_enum<FFT_WINDOW_Type>(cmdline.follow("HANN","-w"));
     avgfft_mode=VARIANCE; // force to this value for psd and spl computation

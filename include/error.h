@@ -32,7 +32,7 @@
 
 //! Prints the error message, the source file ane line number, the full stack trace, and exits
 #define FatalErrorST(s) {                                           \
-  printf("\nFatal error, '%s' at %s:%d\n\n",s,__FILE__,__LINE__);      \
+  printf("\nFatal error: %s:%d\n'%s'\n\n",__FILE__,__LINE__,s);      \
   exit(1); }
 
 //! Prints the error message, the source file and line number, and exits
