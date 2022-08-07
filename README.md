@@ -1,9 +1,9 @@
 A C++ toolbox for computing Discrete and Fast Fourier Transforms (DFT,FFT), Power Spectral Density (PSD) estimates, and the sound pressure level (SPL) in (dB).
 
-Example for usage:
-----------------------
+Example for usage using a datafile only as follows:
+----------------------------------------------------
 <pre>
-If you have an input file with column formats:
+If you have a data file with column formats:
        time   signal_1     signal_2     signal_3 
       
 line1  0.0     0.0          1.0         -0.3     
@@ -13,27 +13,22 @@ line2  0.1     2.5          2.0          0.7
 ....   ...     ...          ...          ...  
 
 
-**Linux
-Inside the cloned directory $ mkdir obj , $ mkdir bin, before compile
-1-compile the code by running make inside the code directory after cloning. 
+Linux
+--------
+Inside the cloned directory $ mkdir obj , $ mkdir bin, before compile.
+1-compile the code by running $ make , inside the code directory after cloning. 
 2-run the code as follows:
-$ ./bin/fftpsd -i inputfile.dat -n 2048 
+$ ./bin/fftpsd -i datafile.dat -n 2048 
 for fft only.
 or
-$ ./bin/fftpsd -i inputfile.dat -n -spl 
+$ ./bin/fftpsd -i datafile.dat -n 2048 -spl 
 for computing the sound pressure level
-The above commands by default uses the first two columns in the input file only. 
+The above commands by default use the first two columns in the input file only. 
 If you want to compute fft/spl for other signals use the following:
-$ ./bin/fftpsd -i inputfile.dat -n 2048 -spl -c 3 -r 10 -q 100
+$ ./bin/fftpsd -i datafile.dat -n 2048 -spl -c 3 -r 10 -q 100
 This means use signal_2 and start from row 10 to row 100.
 
-**Windows:
-Inside the cloned directory make the two obj and bin directories.
-1- open a cmd window and navigate to the cloned directory.
-2- compile by typing make in the cmd
-3- run the code as the case for Linux above.
-
-** An update will be pushed to make the obj and bin directories automatically. 
+** An update will be pushed soon to create the obj and bin directories automatically. 
 
 For more options please use the following table:
 <pre>
