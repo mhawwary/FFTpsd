@@ -72,5 +72,3 @@ Detailed option list and discription
     [-peak]     peak preserving averaging fft mode, useful for ensemble averaging with shift=1.
     [-variance] variance preserving averaging fft mode for conserving the signal energy, by default it is forced for psd, power and spl computations
     [-pref pressure] reference pressure for SPL computation, default is 2e-5 Pa
-    [-bin] bin-averaging for psd and spl
-    [-oct number] the number nth octave averaging that is required, default is 1
