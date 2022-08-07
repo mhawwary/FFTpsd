@@ -57,8 +57,8 @@ Detailed option list and discription
     [-q last_row ]  of the signal data in the data file, default is the end of the file
     [-c column] of the signal data in the data file, default 2, assuming time is at the first column
 
-    [-n N] number of data in one window subset, or in the whole sample if no shifting/averaging, must be 2^{k}, k is an integer
-    [-l Lt_sub] window length in sec or the whole sample length if no shifting/averaging
+    [-n N] number of data in one window subset, or in the whole sample if no shifting/averaging. If using fft it must be 2^{k}, k is an integer
+    [-l time length] window subset length in sec or the whole sample length if no shifting/averaging
     [-s shift] a value in [0.,1.] to indicate the ratio of data to be shifted
              shift defaults: 0.5 for psd/pow/spl, 0. for fft
     [-dt time_step] of the window subset or the whole sample in sec
