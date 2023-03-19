@@ -198,18 +198,19 @@ void FFT_Driver::ComputeSPL(){
 
     p_abs=std::abs(fft_vec_[0])*spl_scaling;
     spl_vec_[0]=20.*std::log10(p_abs/psd_param_.p_ref);
-    p_abs_sum=p_abs;
+    p_abs_sum=p_abs*p_abs;
 
     for(int iff=1; iff<Nfreq_-1; iff++){
       p_abs=sqroot2*std::abs(fft_vec_[iff])*spl_scaling;
       spl_vec_[iff]=20.*std::log10(p_abs/psd_param_.p_ref);
-      p_abs_sum+=p_abs;
+      p_abs_sum+=p_abs*p_abs;
     }
 
-    p_abs=std::fabs(fft_vec_[Nfreq_-1])*spl_scaling;
+    p_abs=std::abs(fft_vec_[Nfreq_-1])*spl_scaling;
     spl_vec_[Nfreq_-1]=20.*std::log10(p_abs/psd_param_.p_ref);
-    p_abs_sum+=p_abs;
-    oaspl_=20.*std::log10(p_abs_sum/psd_param_.p_ref);
+    p_abs_sum+=p_abs*p_abs;
+    p_abs_sum /= pow(psd_param_.p_ref, 2);
+    oaspl_=10.*std::log10(p_abs_sum);
 
   //}else{
 
