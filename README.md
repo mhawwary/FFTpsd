@@ -1,6 +1,16 @@
 A C++ toolbox for computing Discrete and Fast Fourier Transforms (DFT,FFT), Power Spectral Density (PSD) estimates, and the sound pressure level (SPL) in (dB).
 
-Example for usage using a datafile only as follows:
+Code Compilation:
+------------------
+1. Clone the code
+	$ git clone https://github.com/mhawwary/FFTpsd.git 
+2. cd to the cloned directory FFTpsd/
+	$ cd FFTpsd/
+2. Compile the code
+	$ make
+
+
+Examples for usage using a datafile only as follows:
 ----------------------------------------------------
 <pre>
 If you have a data file with column formats:
@@ -13,22 +23,17 @@ line2  0.1     2.5          2.0          0.7
 ....   ...     ...          ...          ...  
 
 
-Linux
---------
-Inside the cloned directory $ mkdir obj , $ mkdir bin, before compile.
-1-compile the code by running $ make , inside the code directory after cloning. 
-2-run the code as follows:
-$ ./bin/fftpsd -i datafile.dat -n 2048 
-for fft only.
-or
-$ ./bin/fftpsd -i datafile.dat -n 2048 -spl 
-for computing the sound pressure level
-The above commands by default use the first two columns in the input file only. 
-If you want to compute fft/spl for other signals use the following:
-$ ./bin/fftpsd -i datafile.dat -n 2048 -spl -c 3 -r 10 -q 100
-This means use signal_2 and start from row 10 to row 100.
+Ex1, computing fft only: 
+	$ ./bin/fftpsd -i datafile.dat -n 2048 
 
-** An update will be pushed soon to create the obj and bin directories automatically. 
+Ex2, computing sound pressure level:
+	$ ./bin/fftpsd -i datafile.dat -n 2048 -spl 
+
+Ex3: The above commands by default use the first two columns in the input file only. If you want to compute fft/spl for other signals use the following:
+	$ ./bin/fftpsd -i datafile.dat -n 2048 -spl -c 3 -r 10 -q 100
+
+which means use signal_2 and start from row 10 to row 100.
+
 
 For more options please use the following table:
 <pre>

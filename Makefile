@@ -50,15 +50,16 @@ endif
 # Source
 
 SRC	= src/
-OBJ	= obj/
-BIN	= bin/
+OBJ	= ./obj/
+BIN	= ./bin/
 INC	= include/      
+OUT_DIR = $(OBJ) $(BIN)
 
-vpath %.cpp src
-vpath %.c src
-vpath %.o   obj
-vpath %.h include src
-vpath %.hpp include src
+vpath %.cpp $(SRC)
+vpath %.c $(SRC)
+vpath %.o $(OBJ)
+vpath %.h $(INC) $(SRC)
+vpath %.hpp $(INC) $(SRC)
 
 #source files:
 src_filename = FFTpsd
@@ -70,17 +71,23 @@ OBJS	=  $(OBJo) $(OBJ)fft_driver.o $(OBJ)fft.o $(OBJ)fft_param.o $(OBJ)general_t
 INCLS	= 
 
 # Compile
-.PHONY: default help clean
+.PHONY: default help clean directories
 
 default: all
 help:	
 	@echo 'help'
 
-all: $(BINNAME)
+all: directories $(BINNAME)
+
+directories: ${OUT_DIR}
+
+${OUT_DIR}:
+	mkdir -p ${OUT_DIR}
+
 $(BINNAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OPTS) $(LDLFLAGS) -o $(BIN)$@ $+
 
-$(OBJ)%.o : %.cpp 
+$(OBJ)%.o : %.cpp
 	$(CXX) $(CXXFLAGS) $(OPTS) -c -o $@ $<
 $(OBJ)%.o : %.c 
 	$(CXX) $(CXXFLAGS) $(OPTS) -c -o $@ $<
@@ -96,4 +103,3 @@ clean:
 	rm -f ./$(OBJ)*.o ./$(BIN)*.exe 
 	rm -f *.exe *.o ./$(BIN)fftpsd* fftpsd*
 	@echo  removing all object and executable files
-
